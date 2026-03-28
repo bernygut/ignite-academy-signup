@@ -26,7 +26,6 @@ const COLUMNS = [
   { id: 'email', label: 'Correo', sortable: true },
   { id: 'programme', label: 'Programa', sortable: false },
   { id: 'ngo_name', label: 'ONG', sortable: true },
-  { id: 'country', label: 'País', sortable: true },
   { id: 'status', label: 'Estado', sortable: true },
   { id: 'submitted_at', label: 'Enviada', sortable: true },
   { id: 'actions', label: '', sortable: false },
@@ -121,7 +120,6 @@ export default function ApplicationsTable({ applications, loading, onEdit }) {
                       </Box>
                     </TableCell>
                     <TableCell>{app.ngo_name ?? '–'}</TableCell>
-                    <TableCell>{app.country ?? '–'}</TableCell>
                     <TableCell>
                       <Chip
                         label={STATUS_LABELS[app.status]}

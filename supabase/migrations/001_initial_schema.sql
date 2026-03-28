@@ -38,15 +38,12 @@ CREATE TABLE applications (
     email            TEXT NOT NULL,
     phone            TEXT,
     age              SMALLINT CHECK (age > 0 AND age < 120),
-    gender           TEXT,
-    country          TEXT,
+    identificacion   TEXT,
 
-    -- NGO / caseworker context
+    -- NGO context
     ngo_name         TEXT,
-    caseworker_name  TEXT,
-    beneficiary_id   TEXT,
 
-    -- Programme
+    -- Programme (UUID FK to programmes table)
     programme_id     UUID NOT NULL REFERENCES programmes(id),
 
     -- Workflow
@@ -118,9 +115,9 @@ CREATE POLICY "admin_update_application"
 -- No DELETE policy intentionally — hard deletes go through a migration
 
 -- ----------------------------------------------------------------
--- SEED: example programmes (edit before going live)
+-- SEED: programmes (fixed UUIDs so the signup form can reference them)
 -- ----------------------------------------------------------------
-INSERT INTO programmes (name, cohort, description, is_active, starts_at) VALUES
-  ('Digital Skills Bootcamp', 'Cohort 1 – June 2026', 'An intensive 8-week programme covering digital literacy, spreadsheets, and internet safety.', true, '2026-06-02'),
-  ('Entrepreneurship Fundamentals', 'Cohort 1 – July 2026', 'A 6-week course exploring business ideation, budgeting, and market research.', true, '2026-07-07'),
-  ('English for the Workplace', 'Cohort 2 – June 2026', 'Communication skills for professional environments.', true, '2026-06-09');
+INSERT INTO programmes (id, name, is_active) VALUES
+  ('a0000000-0000-0000-0000-000000000001', 'AI-900',  true),
+  ('a0000000-0000-0000-0000-000000000002', 'AZ-900',  true),
+  ('a0000000-0000-0000-0000-000000000003', 'SC-900',  true);

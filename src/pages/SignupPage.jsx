@@ -8,10 +8,10 @@ export default function SignupPage() {
       <PublicHeader />
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography variant="h4" gutterBottom>
-          Apply to Ignite Academy
+          Aplicar a Ignite Academy
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Complete the form below to submit your application. Fields marked with * are required.
+          Completa el formulario para enviar tu solicitud. Los campos marcados con * son obligatorios.
         </Typography>
         <SignupForm />
       </Container>

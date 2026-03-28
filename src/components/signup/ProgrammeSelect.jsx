@@ -4,29 +4,23 @@ import {
   Select,
   MenuItem,
   FormHelperText,
-  Skeleton,
 } from '@mui/material'
-import { useProgrammes } from '../../hooks/useProgrammes'
+
+const PROGRAMMES = ['AI-900', 'Az-900', 'SC-900']
 
 export default function ProgrammeSelect({ value, onChange, error, helperText }) {
-  const { programmes, loading } = useProgrammes()
-
-  if (loading) {
-    return <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 1 }} />
-  }
-
   return (
     <FormControl fullWidth error={Boolean(error)}>
-      <InputLabel id="programme-label">Programme *</InputLabel>
+      <InputLabel id="programme-label">Programa *</InputLabel>
       <Select
         labelId="programme-label"
         value={value}
-        label="Programme *"
+        label="Programa *"
         onChange={(e) => onChange(e.target.value)}
       >
-        {programmes.map((p) => (
-          <MenuItem key={p.id} value={p.id}>
-            {p.name}{p.cohort ? ` – ${p.cohort}` : ''}
+        {PROGRAMMES.map((name) => (
+          <MenuItem key={name} value={name}>
+            {name}
           </MenuItem>
         ))}
       </Select>

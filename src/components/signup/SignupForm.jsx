@@ -4,7 +4,6 @@ import {
   Button,
   CircularProgress,
   Grid,
-  MenuItem,
   TextField,
 } from '@mui/material'
 import FormSection from './FormSection'
@@ -12,7 +11,6 @@ import ProgrammeSelect from './ProgrammeSelect'
 import SuccessScreen from './SuccessScreen'
 import { createApplication } from '../../services/applicationService'
 import { sendConfirmationEmail } from '../../services/emailService'
-import { GENDER_OPTIONS } from '../../utils/constants'
 import { useSnackbar } from '../../context/SnackbarContext'
 
 const INITIAL_FORM = {
@@ -20,26 +18,23 @@ const INITIAL_FORM = {
   email: '',
   phone: '',
   age: '',
-  gender: '',
-  country: '',
+  identificacion: '',
   ngo_name: '',
-  caseworker_name: '',
-  beneficiary_id: '',
   programme_id: '',
 }
 
 function validate(form) {
   const errors = {}
-  if (!form.full_name.trim()) errors.full_name = 'Full name is required'
+  if (!form.full_name.trim()) errors.full_name = 'El nombre completo es requerido'
   if (!form.email.trim()) {
-    errors.email = 'Email is required'
+    errors.email = 'El correo electrónico es requerido'
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    errors.email = 'Enter a valid email address'
+    errors.email = 'Ingresa un correo electrónico válido'
   }
   if (form.age && (isNaN(Number(form.age)) || Number(form.age) < 1 || Number(form.age) > 119)) {
-    errors.age = 'Enter a valid age (1–119)'
+    errors.age = 'Ingresa una edad válida (1–119)'
   }
-  if (!form.programme_id) errors.programme_id = 'Please select a programme'
+  if (!form.programme_id) errors.programme_id = 'Por favor selecciona un programa'
   return errors
 }
 
@@ -71,11 +66,8 @@ export default function SignupForm() {
         ...form,
         age: form.age ? Number(form.age) : null,
         phone: form.phone || null,
-        gender: form.gender || null,
-        country: form.country || null,
+        identificacion: form.identificacion || null,
         ngo_name: form.ngo_name || null,
-        caseworker_name: form.caseworker_name || null,
-        beneficiary_id: form.beneficiary_id || null,
       }
 
       const row = await createApplication(payload)
@@ -92,7 +84,7 @@ export default function SignupForm() {
 
       setSubmitted({ id: row.id, full_name: form.full_name, email: form.email })
     } catch (err) {
-      showSnack(err.message || 'Submission failed. Please try again.', 'error')
+      showSnack(err.message || 'Error al enviar. Inténtalo de nuevo.', 'error')
     } finally {
       setSubmitting(false)
     }
@@ -115,11 +107,11 @@ export default function SignupForm() {
 
   return (
     <Box component="form" onSubmit={handleSubmit} noValidate>
-      <FormSection title="About You">
+      <FormSection title="Sobre Ti">
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Full Name *"
+              label="Nombre Completo *"
               fullWidth
               value={form.full_name}
               onChange={handleChange('full_name')}
@@ -129,7 +121,7 @@ export default function SignupForm() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Email Address *"
+              label="Correo Electrónico *"
               type="email"
               fullWidth
               value={form.email}
@@ -140,7 +132,7 @@ export default function SignupForm() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Phone Number"
+              label="Número de Teléfono"
               fullWidth
               value={form.phone}
               onChange={handleChange('phone')}
@@ -148,7 +140,7 @@ export default function SignupForm() {
           </Grid>
           <Grid item xs={12} sm={3}>
             <TextField
-              label="Age"
+              label="Edad"
               type="number"
               fullWidth
               value={form.age}
@@ -160,59 +152,29 @@ export default function SignupForm() {
           </Grid>
           <Grid item xs={12} sm={3}>
             <TextField
-              label="Gender"
-              select
+              label="Identificación"
               fullWidth
-              value={form.gender}
-              onChange={handleChange('gender')}
-            >
-              <MenuItem value=""><em>Prefer not to say</em></MenuItem>
-              {GENDER_OPTIONS.map((g) => (
-                <MenuItem key={g} value={g}>{g}</MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Country"
-              fullWidth
-              value={form.country}
-              onChange={handleChange('country')}
+              value={form.identificacion}
+              onChange={handleChange('identificacion')}
             />
           </Grid>
         </Grid>
       </FormSection>
 
-      <FormSection title="Organisation Details">
+      <FormSection title="Detalles de la Organización">
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="NGO / Organisation Name"
+              label="Nombre de la ONG / Organización"
               fullWidth
               value={form.ngo_name}
               onChange={handleChange('ngo_name')}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Caseworker Name"
-              fullWidth
-              value={form.caseworker_name}
-              onChange={handleChange('caseworker_name')}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Beneficiary ID"
-              fullWidth
-              value={form.beneficiary_id}
-              onChange={handleChange('beneficiary_id')}
-            />
-          </Grid>
         </Grid>
       </FormSection>
 
-      <FormSection title="Programme Selection">
+      <FormSection title="Selección de Programa">
         <ProgrammeSelect
           value={form.programme_id}
           onChange={(val) => {
@@ -233,7 +195,7 @@ export default function SignupForm() {
           startIcon={submitting ? <CircularProgress size={20} color="inherit" /> : null}
           sx={{ minWidth: 200 }}
         >
-          {submitting ? 'Submitting…' : 'Submit Application'}
+          {submitting ? 'Enviando…' : 'Enviar Solicitud'}
         </Button>
       </Box>
     </Box>

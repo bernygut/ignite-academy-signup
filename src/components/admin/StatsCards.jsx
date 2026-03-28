@@ -13,9 +13,9 @@ export default function StatsCards({ applications }) {
 
   const cards = [
     { label: 'Total', value: total, icon: <PeopleIcon />, color: '#2196F3' },
-    { label: 'Pending', value: pending, icon: <HourglassEmptyIcon />, color: '#FF9800' },
-    { label: 'Approved', value: approved, icon: <CheckCircleIcon />, color: '#4CAF50' },
-    { label: 'Waitlisted', value: waitlisted, icon: <AccessTimeIcon />, color: '#2196F3' },
+    { label: 'Pendientes', value: pending, icon: <HourglassEmptyIcon />, color: '#FF9800' },
+    { label: 'Aprobadas', value: approved, icon: <CheckCircleIcon />, color: '#4CAF50' },
+    { label: 'En espera', value: waitlisted, icon: <AccessTimeIcon />, color: '#2196F3' },
   ]
 
   return (

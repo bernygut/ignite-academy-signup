@@ -20,7 +20,7 @@ export default function AdminDashboardPage() {
       <AdminHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Typography variant="h4" gutterBottom>
-          Applications
+          Solicitudes
         </Typography>
 
         {error && (

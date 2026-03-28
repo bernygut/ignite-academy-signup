@@ -12,7 +12,7 @@ export default function AdminHeader() {
     try {
       await signOut()
     } catch {
-      showSnack('Logout failed. Please try again.', 'error')
+      showSnack('Error al cerrar sesión. Inténtalo de nuevo.', 'error')
     }
   }
 
@@ -21,7 +21,7 @@ export default function AdminHeader() {
       <Toolbar>
         <SchoolIcon sx={{ mr: 1.5 }} />
         <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1 }}>
-          Ignite Academy — Admin
+          Ignite Academy — Administración
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {session?.user?.email && (
@@ -31,7 +31,7 @@ export default function AdminHeader() {
               sx={{ bgcolor: 'primary.dark', color: 'white' }}
             />
           )}
-          <Tooltip title="Logout">
+          <Tooltip title="Cerrar sesión">
             <IconButton color="inherit" onClick={handleLogout}>
               <LogoutIcon />
             </IconButton>

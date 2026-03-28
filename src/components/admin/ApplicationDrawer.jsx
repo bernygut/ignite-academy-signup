@@ -38,10 +38,10 @@ export default function ApplicationDrawer({ application, onClose, onSave }) {
     setSaving(true)
     try {
       await onSave(application.id, { status, adminNotes: notes })
-      showSnack('Application updated.', 'success')
+      showSnack('Solicitud actualizada.', 'success')
       onClose()
     } catch (err) {
-      showSnack(err.message || 'Failed to save changes.', 'error')
+      showSnack(err.message || 'Error al guardar los cambios.', 'error')
     } finally {
       setSaving(false)
     }
@@ -57,7 +57,7 @@ export default function ApplicationDrawer({ application, onClose, onSave }) {
       PaperProps={{ sx: { width: DRAWER_WIDTH } }}
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Typography variant="h6">Application Details</Typography>
+        <Typography variant="h6">Detalles de la Solicitud</Typography>
         <IconButton onClick={onClose}><CloseIcon /></IconButton>
       </Toolbar>
       <Divider />
@@ -65,25 +65,18 @@ export default function ApplicationDrawer({ application, onClose, onSave }) {
       {application && (
         <Box sx={{ p: 3, overflowY: 'auto', flex: 1 }}>
           {/* Read-only summary */}
-          <Section label="Name" value={application.full_name} />
-          <Section label="Email" value={application.email} />
-          {application.phone && <Section label="Phone" value={application.phone} />}
-          {application.age && <Section label="Age" value={application.age} />}
-          {application.gender && <Section label="Gender" value={application.gender} />}
-          {application.country && <Section label="Country" value={application.country} />}
-          {application.ngo_name && <Section label="NGO" value={application.ngo_name} />}
-          {application.caseworker_name && (
-            <Section label="Caseworker" value={application.caseworker_name} />
-          )}
-          {application.beneficiary_id && (
-            <Section label="Beneficiary ID" value={application.beneficiary_id} />
-          )}
+          <Section label="Nombre" value={application.full_name} />
+          <Section label="Correo" value={application.email} />
+          {application.phone && <Section label="Teléfono" value={application.phone} />}
+          {application.age && <Section label="Edad" value={application.age} />}
+          {application.identificacion && <Section label="Identificación" value={application.identificacion} />}
+          {application.ngo_name && <Section label="ONG" value={application.ngo_name} />}
           <Section
-            label="Programme"
+            label="Programa"
             value={`${application.programmes?.name ?? ''}${application.programmes?.cohort ? ` – ${application.programmes.cohort}` : ''}`}
           />
           <Section
-            label="Submitted"
+            label="Enviada"
             value={new Date(application.submitted_at).toLocaleString()}
           />
 
@@ -91,8 +84,8 @@ export default function ApplicationDrawer({ application, onClose, onSave }) {
 
           {/* Editable fields */}
           <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Status</InputLabel>
-            <Select value={status} label="Status" onChange={(e) => setStatus(e.target.value)}>
+            <InputLabel>Estado</InputLabel>
+            <Select value={status} label="Estado" onChange={(e) => setStatus(e.target.value)}>
               {Object.entries(STATUS_LABELS).map(([val, label]) => (
                 <MenuItem key={val} value={val}>
                   <Chip
@@ -107,7 +100,7 @@ export default function ApplicationDrawer({ application, onClose, onSave }) {
           </FormControl>
 
           <TextField
-            label="Admin Notes"
+            label="Notas del Administrador"
             multiline
             rows={4}
             fullWidth
@@ -123,7 +116,7 @@ export default function ApplicationDrawer({ application, onClose, onSave }) {
             disabled={saving}
             startIcon={saving ? <CircularProgress size={18} color="inherit" /> : null}
           >
-            {saving ? 'Saving…' : 'Save Changes'}
+            {saving ? 'Guardando…' : 'Guardar Cambios'}
           </Button>
         </Box>
       )}

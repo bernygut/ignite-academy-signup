@@ -6,10 +6,10 @@ export const APPLICATION_STATUS = {
 }
 
 export const STATUS_LABELS = {
-  pending: 'Pending',
-  approved: 'Approved',
-  rejected: 'Rejected',
-  waitlisted: 'Waitlisted',
+  pending: 'Pendiente',
+  approved: 'Aprobada',
+  rejected: 'Rechazada',
+  waitlisted: 'En espera',
 }
 
 export const STATUS_COLORS = {

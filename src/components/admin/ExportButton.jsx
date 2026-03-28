@@ -21,15 +21,15 @@ export default function ExportButton({ applications }) {
         onClick={(e) => setAnchor(e.currentTarget)}
         disabled={applications.length === 0}
       >
-        Export
+        Exportar
       </Button>
       <Menu
         anchorEl={anchor}
         open={Boolean(anchor)}
         onClose={() => setAnchor(null)}
       >
-        <MenuItem onClick={() => handleExport('csv')}>Export as CSV</MenuItem>
-        <MenuItem onClick={() => handleExport('excel')}>Export as Excel</MenuItem>
+        <MenuItem onClick={() => handleExport('csv')}>Exportar como CSV</MenuItem>
+        <MenuItem onClick={() => handleExport('excel')}>Exportar como Excel</MenuItem>
       </Menu>
     </>
   )

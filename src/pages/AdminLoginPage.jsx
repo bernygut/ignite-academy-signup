@@ -33,7 +33,7 @@ export default function AdminLoginPage() {
       await signIn(email, password)
       navigate('/admin', { replace: true })
     } catch (err) {
-      setError(err.message || 'Login failed. Please check your credentials.')
+      setError(err.message || 'Error al iniciar sesión. Verifica tus credenciales.')
     } finally {
       setLoading(false)
     }
@@ -55,7 +55,7 @@ export default function AdminLoginPage() {
           <Box sx={{ textAlign: 'center', mb: 3 }}>
             <SchoolIcon color="primary" sx={{ fontSize: 48 }} />
             <Typography variant="h5" fontWeight={700}>
-              Admin Login
+              Inicio de Sesión Admin
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Ignite Academy
@@ -64,7 +64,7 @@ export default function AdminLoginPage() {
 
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <TextField
-              label="Email"
+              label="Correo Electrónico"
               type="email"
               fullWidth
               required
@@ -74,7 +74,7 @@ export default function AdminLoginPage() {
               autoComplete="email"
             />
             <TextField
-              label="Password"
+              label="Contraseña"
               type="password"
               fullWidth
               required
@@ -96,7 +96,7 @@ export default function AdminLoginPage() {
               disabled={loading}
               startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
             >
-              {loading ? 'Signing in…' : 'Sign In'}
+              {loading ? 'Iniciando sesión…' : 'Iniciar Sesión'}
             </Button>
           </Box>
         </CardContent>

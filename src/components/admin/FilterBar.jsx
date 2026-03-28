@@ -19,9 +19,9 @@ export default function FilterBar({ filters, onChange }) {
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2, alignItems: 'center' }}>
       <FormControl size="small" sx={{ minWidth: 140 }}>
-        <InputLabel>Status</InputLabel>
-        <Select value={filters.status} label="Status" onChange={set('status')}>
-          <MenuItem value=""><em>All</em></MenuItem>
+        <InputLabel>Estado</InputLabel>
+        <Select value={filters.status} label="Estado" onChange={set('status')}>
+          <MenuItem value=""><em>Todos</em></MenuItem>
           {Object.entries(STATUS_LABELS).map(([val, label]) => (
             <MenuItem key={val} value={val}>{label}</MenuItem>
           ))}
@@ -29,9 +29,9 @@ export default function FilterBar({ filters, onChange }) {
       </FormControl>
 
       <FormControl size="small" sx={{ minWidth: 200 }}>
-        <InputLabel>Programme</InputLabel>
-        <Select value={filters.programmeId} label="Programme" onChange={set('programmeId')}>
-          <MenuItem value=""><em>All</em></MenuItem>
+        <InputLabel>Programa</InputLabel>
+        <Select value={filters.programmeId} label="Programa" onChange={set('programmeId')}>
+          <MenuItem value=""><em>Todos</em></MenuItem>
           {programmes.map((p) => (
             <MenuItem key={p.id} value={p.id}>
               {p.name}{p.cohort ? ` – ${p.cohort}` : ''}
@@ -41,7 +41,7 @@ export default function FilterBar({ filters, onChange }) {
       </FormControl>
 
       <TextField
-        label="From date"
+        label="Desde"
         type="date"
         size="small"
         value={filters.dateFrom}
@@ -51,7 +51,7 @@ export default function FilterBar({ filters, onChange }) {
       />
 
       <TextField
-        label="To date"
+        label="Hasta"
         type="date"
         size="small"
         value={filters.dateTo}
@@ -62,7 +62,7 @@ export default function FilterBar({ filters, onChange }) {
 
       {hasFilters && (
         <Button size="small" startIcon={<ClearIcon />} onClick={clear}>
-          Clear filters
+          Limpiar filtros
         </Button>
       )}
     </Box>

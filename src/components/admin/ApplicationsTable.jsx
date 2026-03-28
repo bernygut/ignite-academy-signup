@@ -22,13 +22,13 @@ import { STATUS_COLORS, STATUS_LABELS } from '../../utils/constants'
 const ROWS_PER_PAGE_OPTIONS = [10, 25, 50]
 
 const COLUMNS = [
-  { id: 'full_name', label: 'Name', sortable: true },
-  { id: 'email', label: 'Email', sortable: true },
-  { id: 'programme', label: 'Programme', sortable: false },
-  { id: 'ngo_name', label: 'NGO', sortable: true },
-  { id: 'country', label: 'Country', sortable: true },
-  { id: 'status', label: 'Status', sortable: true },
-  { id: 'submitted_at', label: 'Submitted', sortable: true },
+  { id: 'full_name', label: 'Nombre', sortable: true },
+  { id: 'email', label: 'Correo', sortable: true },
+  { id: 'programme', label: 'Programa', sortable: false },
+  { id: 'ngo_name', label: 'ONG', sortable: true },
+  { id: 'country', label: 'País', sortable: true },
+  { id: 'status', label: 'Estado', sortable: true },
+  { id: 'submitted_at', label: 'Enviada', sortable: true },
   { id: 'actions', label: '', sortable: false },
 ]
 
@@ -101,7 +101,7 @@ export default function ApplicationsTable({ applications, loading, onEdit }) {
                   <TableRow>
                     <TableCell colSpan={COLUMNS.length} align="center" sx={{ py: 4 }}>
                       <Typography variant="body2" color="text.secondary">
-                        No applications found.
+                        No se encontraron solicitudes.
                       </Typography>
                     </TableCell>
                   </TableRow>
@@ -135,7 +135,7 @@ export default function ApplicationsTable({ applications, loading, onEdit }) {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Tooltip title="View / Edit">
+                      <Tooltip title="Ver / Editar">
                         <IconButton size="small" onClick={() => onEdit(app)}>
                           <OpenInNewIcon fontSize="small" />
                         </IconButton>

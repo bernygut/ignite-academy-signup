@@ -6,13 +6,13 @@ export default function SuccessScreen({ fullName, email, applicationId, onReset 
     <Paper elevation={2} sx={{ p: 4, textAlign: 'center' }}>
       <CheckCircleOutlineIcon sx={{ fontSize: 72, color: 'success.main', mb: 2 }} />
       <Typography variant="h5" gutterBottom>
-        Thank you, {fullName}!
+        ¡Gracias, {fullName}!
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
-        Your application has been received.
+        Tu solicitud ha sido recibida.
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        A confirmation email has been sent to <strong>{email}</strong>.
+        Se ha enviado un correo de confirmación a <strong>{email}</strong>.
       </Typography>
       <Box
         sx={{
@@ -25,7 +25,7 @@ export default function SuccessScreen({ fullName, email, applicationId, onReset 
         }}
       >
         <Typography variant="caption" color="text.secondary" display="block">
-          Application reference
+          Número de referencia
         </Typography>
         <Typography variant="body2" fontFamily="monospace">
           {applicationId}
@@ -33,7 +33,7 @@ export default function SuccessScreen({ fullName, email, applicationId, onReset 
       </Box>
       <Box>
         <Button variant="outlined" onClick={onReset}>
-          Submit another application
+          Enviar otra solicitud
         </Button>
       </Box>
     </Paper>

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ignite Academy – Sign Up</title>
+    <script>
+      // GitHub Pages SPA redirect trick.
+      // Encodes the path into the query string and redirects to the base index.html.
+      // The app's main.jsx reads this on load and restores the URL before React Router starts.
+      var base = '/ignite-academy-signup';
+      var path = window.location.pathname.replace(base, '') || '/';
+      var search = window.location.search;
+      var hash = window.location.hash;
+      window.location.replace(
+        base + '/?p=' + encodeURIComponent(path + search + hash)
+      );
+    </script>
+  </head>
+  <body></body>
+</html>

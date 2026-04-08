@@ -115,6 +115,13 @@ CREATE POLICY "admin_update_application"
 -- No DELETE policy intentionally — hard deletes go through a migration
 
 -- ----------------------------------------------------------------
+-- GRANTS: table-level permissions (required in addition to RLS policies)
+-- ----------------------------------------------------------------
+GRANT SELECT ON public.programmes   TO anon;
+GRANT INSERT ON public.applications TO anon;
+GRANT SELECT, UPDATE ON public.applications TO authenticated;
+
+-- ----------------------------------------------------------------
 -- SEED: programmes (fixed UUIDs so the signup form can reference them)
 -- ----------------------------------------------------------------
 INSERT INTO programmes (id, name, is_active) VALUES

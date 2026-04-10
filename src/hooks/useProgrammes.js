@@ -7,16 +7,34 @@ export function useProgrammes() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    supabase
-      .from('programmes')
-      .select('id, name, cohort')
-      .eq('is_active', true)
-      .order('starts_at', { ascending: true })
-      .then(({ data, error }) => {
-        if (error) setError(error.message)
-        else setProgrammes(data ?? [])
-        setLoading(false)
-      })
+    Promise.all([
+      supabase
+        .from('programmes')
+        .select('id, name, cohort, max_capacity')
+        .eq('is_active', true)
+        .order('name', { ascending: true }),
+      supabase
+        .from('applications')
+        .select('programme_id')
+        .in('status', ['pending', 'approved']),
+    ]).then(([{ data: progs, error: progErr }, { data: apps, error: appErr }]) => {
+      if (progErr || appErr) {
+        setError((progErr || appErr).message)
+      } else {
+        const counts = {}
+        for (const app of apps ?? []) {
+          counts[app.programme_id] = (counts[app.programme_id] ?? 0) + 1
+        }
+        setProgrammes(
+          (progs ?? []).map((p) => ({
+            ...p,
+            enrolled: counts[p.id] ?? 0,
+            available: p.max_capacity - (counts[p.id] ?? 0),
+          }))
+        )
+      }
+      setLoading(false)
+    })
   }, [])
 
   return { programmes, loading, error }

@@ -6,6 +6,7 @@ import FilterBar from '../components/admin/FilterBar'
 import ApplicationsTable from '../components/admin/ApplicationsTable'
 import ApplicationDrawer from '../components/admin/ApplicationDrawer'
 import ExportButton from '../components/admin/ExportButton'
+import CapacityPanel from '../components/admin/CapacityPanel'
 import { useApplications } from '../hooks/useApplications'
 
 const INITIAL_FILTERS = { status: '', programmeId: '', dateFrom: '', dateTo: '' }
@@ -30,6 +31,7 @@ export default function AdminDashboardPage() {
         )}
 
         <StatsCards applications={applications} />
+        <CapacityPanel />
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 1, mb: 1 }}>
           <FilterBar filters={filters} onChange={setFilters} />

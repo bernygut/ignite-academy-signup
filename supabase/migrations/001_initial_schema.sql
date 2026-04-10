@@ -16,6 +16,7 @@ CREATE TABLE programmes (
     cohort        TEXT,                         -- e.g. "Cohort 7 – Apr 2026"
     description   TEXT,
     is_active     BOOLEAN NOT NULL DEFAULT true,
+    max_capacity  SMALLINT NOT NULL DEFAULT 35,
     starts_at     DATE,
     created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );

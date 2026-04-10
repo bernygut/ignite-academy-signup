@@ -32,6 +32,15 @@ export async function fetchApplications({ status, programmeId, dateFrom, dateTo 
   return data
 }
 
+export async function updateProgrammeCapacity(programmeId, maxCapacity) {
+  const { error } = await supabase
+    .from('programmes')
+    .update({ max_capacity: maxCapacity })
+    .eq('id', programmeId)
+
+  if (error) throw error
+}
+
 export async function updateApplication(id, { status, adminNotes }) {
   const updates = {
     status,

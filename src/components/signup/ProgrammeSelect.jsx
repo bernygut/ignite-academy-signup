@@ -4,15 +4,18 @@ import {
   Select,
   MenuItem,
   FormHelperText,
+  Skeleton,
+  Typography,
 } from '@mui/material'
-
-const PROGRAMMES = [
-  { id: 'a0000000-0000-0000-0000-000000000001', name: 'AI-900' },
-  { id: 'a0000000-0000-0000-0000-000000000002', name: 'Az-900' },
-  { id: 'a0000000-0000-0000-0000-000000000003', name: 'SC-900' },
-]
+import { useProgrammes } from '../../hooks/useProgrammes'
 
 export default function ProgrammeSelect({ value, onChange, error, helperText }) {
+  const { programmes, loading } = useProgrammes()
+
+  if (loading) {
+    return <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 1 }} />
+  }
+
   return (
     <FormControl fullWidth error={Boolean(error)}>
       <InputLabel id="programme-label">Programa *</InputLabel>
@@ -22,9 +25,15 @@ export default function ProgrammeSelect({ value, onChange, error, helperText }) 
         label="Programa *"
         onChange={(e) => onChange(e.target.value)}
       >
-        {PROGRAMMES.map((p) => (
-          <MenuItem key={p.id} value={p.id}>
-            {p.name}
+        {programmes.map((p) => (
+          <MenuItem key={p.id} value={p.id} disabled={p.available <= 0}>
+            <span style={{ flexGrow: 1 }}>{p.name}</span>
+            <Typography
+              variant="caption"
+              sx={{ ml: 2, color: p.available <= 0 ? 'error.main' : p.available <= 5 ? 'warning.main' : 'text.secondary' }}
+            >
+              {p.available <= 0 ? 'Lleno' : `${p.available} espacios disponibles`}
+            </Typography>
           </MenuItem>
         ))}
       </Select>

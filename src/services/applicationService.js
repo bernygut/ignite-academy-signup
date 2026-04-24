@@ -15,7 +15,7 @@ export async function fetchApplications({ status, programmeId, dateFrom, dateTo 
   let query = supabase
     .from('applications')
     .select(`
-      id, full_name, email, phone, age, identificacion,
+      id, full_name, email, age, identificacion,
       diversity_group, ngo_name,
       status, admin_notes, reviewed_at, submitted_at,
       programmes ( id, name, cohort )

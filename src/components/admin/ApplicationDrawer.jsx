@@ -67,7 +67,6 @@ export default function ApplicationDrawer({ application, onClose, onSave }) {
           {/* Read-only summary */}
           <Section label="Nombre" value={application.full_name} />
           <Section label="Correo" value={application.email} />
-          {application.phone && <Section label="Teléfono" value={application.phone} />}
           {application.age && <Section label="Edad" value={application.age} />}
           {application.identificacion && <Section label="Identificación" value={application.identificacion} />}
           {application.diversity_group && <Section label="Grupo de Diversidad e Inclusión" value={application.diversity_group} />}

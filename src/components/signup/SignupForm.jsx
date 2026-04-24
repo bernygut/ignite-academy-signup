@@ -18,7 +18,6 @@ import { useSnackbar } from '../../context/SnackbarContext'
 const INITIAL_FORM = {
   full_name: '',
   email: '',
-  phone: '',
   age: '',
   identificacion: '',
   diversity_group: '',
@@ -38,6 +37,8 @@ function validate(form) {
   if (form.age && (isNaN(Number(form.age)) || Number(form.age) < 1 || Number(form.age) > 119)) {
     errors.age = 'Ingresa una edad válida (1–119)'
   }
+  if (!form.identificacion.trim()) errors.identificacion = 'La identificación es requerida'
+  if (!form.diversity_group) errors.diversity_group = 'Por favor selecciona un grupo'
   if (!form.programme_id) errors.programme_id = 'Por favor selecciona un programa'
   return errors
 }
@@ -70,9 +71,6 @@ export default function SignupForm() {
       const payload = {
         ...formData,
         age: form.age ? Number(form.age) : null,
-        phone: form.phone || null,
-        identificacion: form.identificacion || null,
-        diversity_group: form.diversity_group || null,
         ngo_name: form.ngo_name || null,
       }
 
@@ -84,7 +82,6 @@ export default function SignupForm() {
         fullName: form.full_name,
         programmeName: form.programme_name,
         applicationId: row.id,
-        phone: form.phone || null,
         age: form.age || null,
         ngoName: form.ngo_name || null,
       }).catch((err) => {
@@ -139,15 +136,7 @@ export default function SignupForm() {
               helperText={errors.email}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Número de Teléfono"
-              fullWidth
-              value={form.phone}
-              onChange={handleChange('phone')}
-            />
-          </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={4}>
             <TextField
               label="Edad"
               type="number"
@@ -159,12 +148,14 @@ export default function SignupForm() {
               inputProps={{ min: 1, max: 119 }}
             />
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={4}>
             <TextField
-              label="Identificación"
+              label="Identificación *"
               fullWidth
               value={form.identificacion}
               onChange={handleChange('identificacion')}
+              error={Boolean(errors.identificacion)}
+              helperText={errors.identificacion}
             />
           </Grid>
         </Grid>
@@ -172,14 +163,16 @@ export default function SignupForm() {
 
       <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
         <Box sx={{ flex: 1, minWidth: 240 }}>
-          <FormSection title="Grupo de Diversidad e Inclusión">
+          <FormSection title="Grupo de Diversidad e Inclusión *">
             <TextField
               select
               fullWidth
               value={form.diversity_group}
               onChange={handleChange('diversity_group')}
+              error={Boolean(errors.diversity_group)}
+              helperText={errors.diversity_group}
             >
-              <MenuItem value=""><em>Ninguno</em></MenuItem>
+              <MenuItem value=""><em>Selecciona un grupo</em></MenuItem>
               {DIVERSITY_GROUP_OPTIONS.map((g) => (
                 <MenuItem key={g} value={g}>{g}</MenuItem>
               ))}

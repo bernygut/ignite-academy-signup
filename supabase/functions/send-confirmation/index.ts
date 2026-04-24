@@ -11,9 +11,7 @@ const FROM_EMAIL = Deno.env.get('FROM_EMAIL') ?? 'noreply@igniteacademy.org'
 const ADMIN_EMAIL = Deno.env.get('ADMIN_NOTIFICATION_EMAIL')
 
 const ALLOWED_ORIGINS = [
-  'https://bernygut.github.io',
-  'http://localhost:5173',
-  'http://localhost:4173',
+  'https://bernygut.github.io'
 ]
 
 async function sendEmail(to: string, subject: string, html: string) {
@@ -60,6 +58,7 @@ serve(async (req: Request) => {
     phone?: string | null
     age?: string | null
     ngo_name?: string | null
+    diversity_group?: string | null
   }
 
   try {
@@ -71,7 +70,7 @@ serve(async (req: Request) => {
     })
   }
 
-  const { to_email, full_name, programme_name, application_id, phone, age, ngo_name } = body
+  const { to_email, full_name, programme_name, application_id, phone, age, ngo_name, diversity_group } = body
 
   if (!to_email || !full_name || !programme_name || !application_id) {
     return new Response(JSON.stringify({ error: 'Missing required fields' }), {
@@ -85,6 +84,7 @@ serve(async (req: Request) => {
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2196F3;">¡Gracias por inscribirte, ${escapeHtml(full_name)}!</h2>
       <p>Tu solicitud para <strong>${escapeHtml(programme_name)}</strong> ha sido recibida.</p>
+      ${diversity_group ? `<p>Grupo de Diversidad e Inclusión: <strong>${escapeHtml(diversity_group)}</strong></p>` : ''}
       <p>
         Tu número de referencia es:<br/>
         <code style="background:#f5f5f5; padding: 4px 8px; border-radius: 4px; font-size: 14px;">
@@ -101,6 +101,7 @@ serve(async (req: Request) => {
 
   // --- Admin notification email ---
   const optionalRows = [
+    diversity_group ? `<tr><td style="${tdLabel}">Grupo de Diversidad</td><td>${escapeHtml(diversity_group)}</td></tr>` : '',
     phone    ? `<tr><td style="${tdLabel}">Teléfono</td><td>${escapeHtml(phone)}</td></tr>` : '',
     age      ? `<tr><td style="${tdLabel}">Edad</td><td>${escapeHtml(String(age))}</td></tr>` : '',
     ngo_name ? `<tr><td style="${tdLabel}">ONG</td><td>${escapeHtml(ngo_name)}</td></tr>` : '',

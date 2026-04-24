@@ -1,6 +1,6 @@
 const EDGE_FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-confirmation`
 
-export async function sendConfirmationEmail({ toEmail, fullName, programmeName, applicationId, phone, age, ngoName }) {
+export async function sendConfirmationEmail({ toEmail, fullName, programmeName, applicationId, phone, age, ngoName, diversityGroup }) {
   const res = await fetch(EDGE_FN_URL, {
     method: 'POST',
     headers: {
@@ -15,6 +15,7 @@ export async function sendConfirmationEmail({ toEmail, fullName, programmeName, 
       phone: phone ?? null,
       age: age ?? null,
       ngo_name: ngoName ?? null,
+      diversity_group: diversityGroup ?? null,
     }),
   })
 

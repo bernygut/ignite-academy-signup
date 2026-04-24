@@ -1,7 +1,7 @@
 import { Box, Button, Paper, Typography } from '@mui/material'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 
-export default function SuccessScreen({ fullName, email, applicationId, onReset }) {
+export default function SuccessScreen({ fullName, email, applicationId, diversityGroup, onReset }) {
   return (
     <Paper elevation={2} sx={{ p: 4, textAlign: 'center' }}>
       <CheckCircleOutlineIcon sx={{ fontSize: 72, color: 'success.main', mb: 2 }} />
@@ -11,6 +11,11 @@ export default function SuccessScreen({ fullName, email, applicationId, onReset 
       <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
         Tu solicitud ha sido recibida.
       </Typography>
+      {diversityGroup && (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          Grupo de Diversidad e Inclusión: <strong>{diversityGroup}</strong>
+        </Typography>
+      )}
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Se ha enviado un correo de confirmación a <strong>{email}</strong>.
       </Typography>

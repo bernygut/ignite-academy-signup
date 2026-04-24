@@ -84,11 +84,12 @@ export default function SignupForm() {
         applicationId: row.id,
         age: form.age || null,
         ngoName: form.ngo_name || null,
+        diversityGroup: form.diversity_group || null,
       }).catch((err) => {
         console.warn('Confirmation email failed (non-blocking):', err.message)
       })
 
-      setSubmitted({ id: row.id, full_name: form.full_name, email: form.email })
+      setSubmitted({ id: row.id, full_name: form.full_name, email: form.email, diversity_group: form.diversity_group })
     } catch (err) {
       showSnack(err.message || 'Error al enviar. Inténtalo de nuevo.', 'error')
     } finally {
@@ -102,6 +103,7 @@ export default function SignupForm() {
         fullName={submitted.full_name}
         email={submitted.email}
         applicationId={submitted.id}
+        diversityGroup={submitted.diversity_group}
         onReset={() => {
           setSubmitted(null)
           setForm(INITIAL_FORM)

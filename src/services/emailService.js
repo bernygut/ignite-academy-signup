@@ -1,11 +1,10 @@
 const EDGE_FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-confirmation`
 
-export async function sendConfirmationEmail({ toEmail, fullName, programmeName, applicationId }) {
+export async function sendConfirmationEmail({ toEmail, fullName, programmeName, applicationId, phone, age, ngoName }) {
   const res = await fetch(EDGE_FN_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      // The anon key authenticates the Edge Function call
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
     },
     body: JSON.stringify({
@@ -13,6 +12,9 @@ export async function sendConfirmationEmail({ toEmail, fullName, programmeName, 
       full_name: fullName,
       programme_name: programmeName,
       application_id: applicationId,
+      phone: phone ?? null,
+      age: age ?? null,
+      ngo_name: ngoName ?? null,
     }),
   })
 

@@ -21,6 +21,7 @@ const INITIAL_FORM = {
   identificacion: '',
   ngo_name: '',
   programme_id: '',
+  programme_name: '',
 }
 
 function validate(form) {
@@ -62,8 +63,9 @@ export default function SignupForm() {
 
     setSubmitting(true)
     try {
+      const { programme_name, ...formData } = form
       const payload = {
-        ...form,
+        ...formData,
         age: form.age ? Number(form.age) : null,
         phone: form.phone || null,
         identificacion: form.identificacion || null,
@@ -76,8 +78,11 @@ export default function SignupForm() {
       sendConfirmationEmail({
         toEmail: form.email,
         fullName: form.full_name,
-        programmeName: '', // We don't have the name here; service resolves it
+        programmeName: form.programme_name,
         applicationId: row.id,
+        phone: form.phone || null,
+        age: form.age || null,
+        ngoName: form.ngo_name || null,
       }).catch((err) => {
         console.warn('Confirmation email failed (non-blocking):', err.message)
       })
@@ -177,8 +182,8 @@ export default function SignupForm() {
       <FormSection title="Selección de Programa">
         <ProgrammeSelect
           value={form.programme_id}
-          onChange={(val) => {
-            setForm((prev) => ({ ...prev, programme_id: val }))
+          onChange={(id, name) => {
+            setForm((prev) => ({ ...prev, programme_id: id, programme_name: name }))
             if (errors.programme_id) setErrors((prev) => ({ ...prev, programme_id: undefined }))
           }}
           error={errors.programme_id}

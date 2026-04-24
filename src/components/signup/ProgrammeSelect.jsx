@@ -23,10 +23,12 @@ export default function ProgrammeSelect({ value, onChange, error, helperText }) 
         labelId="programme-label"
         value={value}
         label="Programa *"
-        onChange={(e) => onChange(e.target.value)}
+        onChange={() => {}}
       >
         {programmes.map((p) => (
-          <MenuItem key={p.id} value={p.id} disabled={p.available <= 0}>
+          <MenuItem key={p.id} value={p.id} disabled={p.available <= 0}
+            onClick={() => onChange(p.id, p.name)}
+          >
             <span style={{ flexGrow: 1 }}>{p.name}</span>
             <Typography
               variant="caption"

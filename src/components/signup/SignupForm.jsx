@@ -170,11 +170,10 @@ export default function SignupForm() {
         </Grid>
       </FormSection>
 
-      <FormSection title="Detalles de la Organización">
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+      <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+        <Box sx={{ flex: 1, minWidth: 240 }}>
+          <FormSection title="Grupo de Diversidad e Inclusión">
             <TextField
-              label="Grupo de Diversidad e Inclusión"
               select
               fullWidth
               value={form.diversity_group}
@@ -185,17 +184,19 @@ export default function SignupForm() {
                 <MenuItem key={g} value={g}>{g}</MenuItem>
               ))}
             </TextField>
-          </Grid>
-          <Grid item xs={12} sm={6}>
+          </FormSection>
+        </Box>
+        <Box sx={{ flex: 1, minWidth: 240 }}>
+          <FormSection title="Detalles de la Organización">
             <TextField
               label="Nombre de la ONG / Organización"
               fullWidth
               value={form.ngo_name}
               onChange={handleChange('ngo_name')}
             />
-          </Grid>
-        </Grid>
-      </FormSection>
+          </FormSection>
+        </Box>
+      </Box>
 
       <FormSection title="Selección de Programa">
         <ProgrammeSelect

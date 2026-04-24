@@ -1,14 +1,13 @@
 import supabase from '../lib/supabaseClient'
 
 export async function createApplication(data) {
-  const { data: row, error } = await supabase
+  const id = crypto.randomUUID()
+  const { error } = await supabase
     .from('applications')
-    .insert([data])
-    .select('id')
-    .single()
+    .insert([{ ...data, id }])
 
   if (error) throw error
-  return row
+  return { id }
 }
 
 export async function fetchApplications({ status, programmeId, dateFrom, dateTo } = {}) {

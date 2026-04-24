@@ -42,6 +42,7 @@ CREATE TABLE applications (
     identificacion   TEXT,
 
     -- NGO context
+    diversity_group  TEXT,
     ngo_name         TEXT,
 
     -- Programme (UUID FK to programmes table)

@@ -26,3 +26,12 @@ export const GENDER_OPTIONS = [
   'Prefer not to say',
   'Other',
 ]
+
+export const DIVERSITY_GROUP_OPTIONS = [
+  'HOLA',
+  'BAMCCR',
+  'FAMILIES',
+  'WAM',
+  'INDIGENOUS',
+  'GLEAM',
+]

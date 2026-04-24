@@ -4,6 +4,7 @@ import {
   Button,
   CircularProgress,
   Grid,
+  MenuItem,
   TextField,
 } from '@mui/material'
 import FormSection from './FormSection'
@@ -11,6 +12,7 @@ import ProgrammeSelect from './ProgrammeSelect'
 import SuccessScreen from './SuccessScreen'
 import { createApplication } from '../../services/applicationService'
 import { sendConfirmationEmail } from '../../services/emailService'
+import { DIVERSITY_GROUP_OPTIONS } from '../../utils/constants'
 import { useSnackbar } from '../../context/SnackbarContext'
 
 const INITIAL_FORM = {
@@ -19,6 +21,7 @@ const INITIAL_FORM = {
   phone: '',
   age: '',
   identificacion: '',
+  diversity_group: '',
   ngo_name: '',
   programme_id: '',
   programme_name: '',
@@ -69,6 +72,7 @@ export default function SignupForm() {
         age: form.age ? Number(form.age) : null,
         phone: form.phone || null,
         identificacion: form.identificacion || null,
+        diversity_group: form.diversity_group || null,
         ngo_name: form.ngo_name || null,
       }
 
@@ -168,6 +172,20 @@ export default function SignupForm() {
 
       <FormSection title="Detalles de la Organización">
         <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Grupo de Diversidad e Inclusión"
+              select
+              fullWidth
+              value={form.diversity_group}
+              onChange={handleChange('diversity_group')}
+            >
+              <MenuItem value=""><em>Ninguno</em></MenuItem>
+              {DIVERSITY_GROUP_OPTIONS.map((g) => (
+                <MenuItem key={g} value={g}>{g}</MenuItem>
+              ))}
+            </TextField>
+          </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               label="Nombre de la ONG / Organización"

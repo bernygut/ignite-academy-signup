@@ -16,7 +16,7 @@ export async function fetchApplications({ status, programmeId, dateFrom, dateTo 
     .from('applications')
     .select(`
       id, full_name, email, phone, age, identificacion,
-      ngo_name,
+      diversity_group, ngo_name,
       status, admin_notes, reviewed_at, submitted_at,
       programmes ( id, name, cohort )
     `)

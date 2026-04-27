@@ -110,7 +110,7 @@ serve(async (req: Request) => {
 
   // --- Admin / group lead notification email ---
   const optionalRows = [
-    diversity_group    ? `<tr><td style="${tdLabel}">Grupo de Diversidad</td><td>${escapeHtml(diversity_group)}</td></tr>` : '',
+    diversity_group    ? `<tr><td style="${tdLabel}">Grupo Patrocinador</td><td>${escapeHtml(diversity_group)}</td></tr>` : '',
     educational_email ? `<tr><td style="${tdLabel}">Correo Educativo</td><td>${escapeHtml(educational_email)}</td></tr>` : '',
     age               ? `<tr><td style="${tdLabel}">Edad</td><td>${escapeHtml(String(age))}</td></tr>` : '',
     ngo_name          ? `<tr><td style="${tdLabel}">ONG</td><td>${escapeHtml(ngo_name)}</td></tr>` : '',

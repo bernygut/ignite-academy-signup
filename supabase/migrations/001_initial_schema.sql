@@ -35,11 +35,10 @@ CREATE TABLE applications (
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     -- Personal
-    full_name        TEXT NOT NULL,
-    email            TEXT NOT NULL,
-    phone            TEXT,
-    age              SMALLINT CHECK (age > 0 AND age < 120),
-    identificacion   TEXT,
+    full_name          TEXT NOT NULL,
+    email              TEXT NOT NULL,
+    educational_email  TEXT,
+    age                SMALLINT CHECK (age > 0 AND age < 120),
 
     -- NGO context
     diversity_group  TEXT,

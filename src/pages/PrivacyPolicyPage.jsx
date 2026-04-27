@@ -49,9 +49,9 @@ export default function PrivacyPolicyPage() {
             Correo de contacto: <Link href="mailto:privacy@ignite-academy.org">privacy@ignite-academy.org</Link>
           </P>
           <P>
-            Ignite Academy actúa como responsable del fichero ante la{' '}
-            <strong>Agencia de Protección de Datos de los Habitantes (PRODHAB)</strong> conforme a los
-            artículos 16 y 17 de la Ley N.° 8968.
+            Ignite Academy se encuentra en proceso de registro ante la{' '}
+            <strong>Agencia de Protección de Datos de los Habitantes (PRODHAB)</strong> como responsable
+            del fichero, conforme a los artículos 16 y 17 de la Ley N.° 8968.
           </P>
         </Section>
 

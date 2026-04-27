@@ -10,13 +10,18 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!
 const FROM_EMAIL = Deno.env.get('FROM_EMAIL') ?? 'noreply@igniteacademy.org'
 const ADMIN_EMAIL = Deno.env.get('ADMIN_NOTIFICATION_EMAIL')
 
+function parseLeads(envVar: string | undefined): string[] {
+  if (!envVar) return []
+  return envVar.split(',').map((e) => e.trim()).filter(Boolean)
+}
+
 const GROUP_LEADS: Record<string, string[]> = {
-  HOLA:      ['rodolfogr@microsoft.com'],
-  BAMCCR:    ['hegrant@microsoft.com', 'misolano@microsoft.com'],
-  FAMILIES:  ['bernyg@microsoft.com', 'aaronsan@microsoft.com'],
-  WAM:       ['camilac@microsoft.com'],
-  INDIGENOUS:['jeovied@microsoft.com'],
-  GLEAM:     ['giancarlov@microsoft.com', 'andresq@microsoft.com'],
+  HOLA:       parseLeads(Deno.env.get('GROUP_LEADS_HOLA')),
+  BAMCCR:     parseLeads(Deno.env.get('GROUP_LEADS_BAMCCR')),
+  FAMILIES:   parseLeads(Deno.env.get('GROUP_LEADS_FAMILIES')),
+  WAM:        parseLeads(Deno.env.get('GROUP_LEADS_WAM')),
+  INDIGENOUS: parseLeads(Deno.env.get('GROUP_LEADS_INDIGENOUS')),
+  GLEAM:      parseLeads(Deno.env.get('GROUP_LEADS_GLEAM')),
 }
 
 const ALLOWED_ORIGINS = [

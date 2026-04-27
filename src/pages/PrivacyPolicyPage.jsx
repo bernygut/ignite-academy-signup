@@ -64,7 +64,7 @@ export default function PrivacyPolicyPage() {
               'Correo electrónico educativo (opcional)',
               'Edad',
               'Nombre de la organización o ONG (opcional)',
-              'Grupo de Diversidad e Inclusión al que pertenece',
+              'Grupo Patrocinador a través del cual aplica al programa',
               'Programa de certificación de interés (AI-900, AZ-900, SC-900)',
             ].map((item) => (
               <Typography key={item} component="li" variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
@@ -73,10 +73,10 @@ export default function PrivacyPolicyPage() {
             ))}
           </Box>
           <P>
-            No recopilamos datos sensibles según la definición del artículo 9 de la Ley N.° 8968 (tales como
-            origen racial, creencias religiosas, estado de salud o preferencias sexuales) salvo la
-            autoidentificación voluntaria con un grupo de diversidad e inclusión, la cual es provista
-            libremente por el solicitante con fines de equidad y acceso.
+            El campo "Grupo Patrocinador" identifica la organización o comunidad que patrocina la
+            participación del solicitante en el programa. Esta información se utiliza exclusivamente para
+            fines administrativos y de coordinación con los grupos colaboradores de Ignite Academy.
+            No recopilamos datos sensibles según la definición del artículo 9 de la Ley N.° 8968.
           </P>
         </Section>
 

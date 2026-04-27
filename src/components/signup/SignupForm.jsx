@@ -181,7 +181,7 @@ export default function SignupForm() {
 
       <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
         <Box sx={{ flex: 1, minWidth: 240 }}>
-          <FormSection title="Grupo de Diversidad e Inclusión *">
+          <FormSection title="Grupo Patrocinador *">
             <TextField
               select
               fullWidth

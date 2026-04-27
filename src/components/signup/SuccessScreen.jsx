@@ -13,7 +13,7 @@ export default function SuccessScreen({ fullName, email, applicationId, diversit
       </Typography>
       {diversityGroup && (
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          Grupo de Diversidad e Inclusión: <strong>{diversityGroup}</strong>
+          Grupo Patrocinador: <strong>{diversityGroup}</strong>
         </Typography>
       )}
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

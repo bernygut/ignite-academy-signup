@@ -93,7 +93,7 @@ serve(async (req: Request) => {
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2196F3;">¡Gracias por inscribirte, ${escapeHtml(full_name)}!</h2>
       <p>Tu solicitud para <strong>${escapeHtml(programme_name)}</strong> ha sido recibida.</p>
-      ${diversity_group ? `<p>Grupo de Diversidad e Inclusión: <strong>${escapeHtml(diversity_group)}</strong></p>` : ''}
+      ${diversity_group ? `<p>Grupo Patrocinador: <strong>${escapeHtml(diversity_group)}</strong></p>` : ''}
       <p>
         Tu número de referencia es:<br/>
         <code style="background:#f5f5f5; padding: 4px 8px; border-radius: 4px; font-size: 14px;">

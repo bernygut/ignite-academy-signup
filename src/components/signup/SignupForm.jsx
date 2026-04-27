@@ -236,7 +236,7 @@ export default function SignupForm() {
           label={
             <Typography variant="body2">
               Entiendo que al enviar esta solicitud me comprometo a participar en un curso de aproximadamente
-              10 semanas los sábados del 23 de mayo al 1 de agosto de 2026 con una asistencia superior al 90% de 9:00 a.m. a 12:00 p.m., y acepto que mis datos personales serán
+              10 semanas los sábados del 23 de mayo al 1 de agosto de 2026 de 9:00 a.m. a 12:00 p.m. con una asistencia superior al 90%, y acepto que mis datos personales serán
               tratados conforme a la{' '}
               <Link to="/privacy" target="_blank" rel="noopener noreferrer">
                 Política de Privacidad

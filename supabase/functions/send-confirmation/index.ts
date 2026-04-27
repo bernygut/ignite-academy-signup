@@ -10,6 +10,15 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!
 const FROM_EMAIL = Deno.env.get('FROM_EMAIL') ?? 'noreply@igniteacademy.org'
 const ADMIN_EMAIL = Deno.env.get('ADMIN_NOTIFICATION_EMAIL')
 
+const GROUP_LEADS: Record<string, string[]> = {
+  HOLA:      ['rodolfogr@microsoft.com'],
+  BAMCCR:    ['hegrant@microsoft.com', 'misolano@microsoft.com'],
+  FAMILIES:  ['bernyg@microsoft.com', 'aaronsan@microsoft.com'],
+  WAM:       ['camilac@microsoft.com'],
+  INDIGENOUS:['jeovied@microsoft.com'],
+  GLEAM:     ['giancarlov@microsoft.com', 'andresq@microsoft.com'],
+}
+
 const ALLOWED_ORIGINS = [
   'https://bernygut.github.io'
 ]
@@ -52,10 +61,10 @@ serve(async (req: Request) => {
 
   let body: {
     to_email?: string
+    educational_email?: string | null
     full_name?: string
     programme_name?: string
     application_id?: string
-    phone?: string | null
     age?: string | null
     ngo_name?: string | null
     diversity_group?: string | null
@@ -70,7 +79,7 @@ serve(async (req: Request) => {
     })
   }
 
-  const { to_email, full_name, programme_name, application_id, phone, age, ngo_name, diversity_group } = body
+  const { to_email, educational_email, full_name, programme_name, application_id, age, ngo_name, diversity_group } = body
 
   if (!to_email || !full_name || !programme_name || !application_id) {
     return new Response(JSON.stringify({ error: 'Missing required fields' }), {
@@ -99,35 +108,62 @@ serve(async (req: Request) => {
     </div>
   `
 
-  // --- Admin notification email ---
+  // --- Admin / group lead notification email ---
   const optionalRows = [
-    diversity_group ? `<tr><td style="${tdLabel}">Grupo de Diversidad</td><td>${escapeHtml(diversity_group)}</td></tr>` : '',
-    phone    ? `<tr><td style="${tdLabel}">Teléfono</td><td>${escapeHtml(phone)}</td></tr>` : '',
-    age      ? `<tr><td style="${tdLabel}">Edad</td><td>${escapeHtml(String(age))}</td></tr>` : '',
-    ngo_name ? `<tr><td style="${tdLabel}">ONG</td><td>${escapeHtml(ngo_name)}</td></tr>` : '',
+    diversity_group    ? `<tr><td style="${tdLabel}">Grupo de Diversidad</td><td>${escapeHtml(diversity_group)}</td></tr>` : '',
+    educational_email ? `<tr><td style="${tdLabel}">Correo Educativo</td><td>${escapeHtml(educational_email)}</td></tr>` : '',
+    age               ? `<tr><td style="${tdLabel}">Edad</td><td>${escapeHtml(String(age))}</td></tr>` : '',
+    ngo_name          ? `<tr><td style="${tdLabel}">ONG</td><td>${escapeHtml(ngo_name)}</td></tr>` : '',
   ].join('')
+
+  const notificationTable = `
+    <table style="border-collapse: collapse; width: 100%;">
+      <tr><td style="${tdLabel}">Nombre</td><td>${escapeHtml(full_name)}</td></tr>
+      <tr><td style="${tdLabel}">Correo de Contacto</td><td>${escapeHtml(to_email)}</td></tr>
+      <tr><td style="${tdLabel}">Programa</td><td>${escapeHtml(programme_name)}</td></tr>
+      ${optionalRows}
+      <tr><td style="${tdLabel}">Referencia</td><td><code>${escapeHtml(application_id)}</code></td></tr>
+    </table>
+  `
 
   const adminHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2196F3;">Nueva inscripción en Ignite Academy</h2>
       <p>Se ha recibido una nueva solicitud con los siguientes datos:</p>
-      <table style="border-collapse: collapse; width: 100%;">
-        <tr><td style="${tdLabel}">Nombre</td><td>${escapeHtml(full_name)}</td></tr>
-        <tr><td style="${tdLabel}">Correo</td><td>${escapeHtml(to_email)}</td></tr>
-        <tr><td style="${tdLabel}">Programa</td><td>${escapeHtml(programme_name)}</td></tr>
-        ${optionalRows}
-        <tr><td style="${tdLabel}">Referencia</td><td><code>${escapeHtml(application_id)}</code></td></tr>
-      </table>
+      ${notificationTable}
       <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
       <p style="color: #888; font-size: 12px;">Mensaje automático de Ignite Academy.</p>
     </div>
   `
 
+  const groupLeadHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2196F3;">Nueva inscripción en Ignite Academy</h2>
+      <p>Se ha recibido una nueva solicitud con los siguientes datos:</p>
+      ${notificationTable}
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="https://bernygut.github.io/ignite-academy-signup/#/admin"
+           style="background-color: #2196F3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: bold;">
+          Revisar en el Portal de Administración
+        </a>
+      </div>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
+      <p style="color: #888; font-size: 12px;">Mensaje automático de Ignite Academy.</p>
+    </div>
+  `
+
+  const groupLeads = diversity_group ? (GROUP_LEADS[diversity_group] ?? []) : []
+  const notificationSubject = `Nueva inscripción [${diversity_group ?? 'N/A'}]: ${full_name} – ${programme_name}`
+
   try {
     await sendEmail(to_email, '¡Tu solicitud a Ignite Academy ha sido recibida!', confirmationHtml)
 
     if (ADMIN_EMAIL) {
-      await sendEmail(ADMIN_EMAIL, `Nueva inscripción: ${full_name} – ${programme_name}`, adminHtml)
+      await sendEmail(ADMIN_EMAIL, notificationSubject, adminHtml)
+    }
+
+    for (const lead of groupLeads) {
+      await sendEmail(lead, notificationSubject, groupLeadHtml)
     }
   } catch (err) {
     console.error('Email error:', err)

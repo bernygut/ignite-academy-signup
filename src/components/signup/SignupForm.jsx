@@ -18,8 +18,8 @@ import { useSnackbar } from '../../context/SnackbarContext'
 const INITIAL_FORM = {
   full_name: '',
   email: '',
+  educational_email: '',
   age: '',
-  identificacion: '',
   diversity_group: '',
   ngo_name: '',
   programme_id: '',
@@ -30,14 +30,16 @@ function validate(form) {
   const errors = {}
   if (!form.full_name.trim()) errors.full_name = 'El nombre completo es requerido'
   if (!form.email.trim()) {
-    errors.email = 'El correo electrónico es requerido'
+    errors.email = 'El correo de contacto es requerido'
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    errors.email = 'Ingresa un correo electrónico válido'
+    errors.email = 'Ingresa un correo de contacto válido'
+  }
+  if (form.educational_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.educational_email)) {
+    errors.educational_email = 'Ingresa un correo educativo válido'
   }
   if (form.age && (isNaN(Number(form.age)) || Number(form.age) < 1 || Number(form.age) > 119)) {
     errors.age = 'Ingresa una edad válida (1–119)'
   }
-  if (!form.identificacion.trim()) errors.identificacion = 'La identificación es requerida'
   if (!form.diversity_group) errors.diversity_group = 'Por favor selecciona un grupo'
   if (!form.programme_id) errors.programme_id = 'Por favor selecciona un programa'
   return errors
@@ -72,6 +74,7 @@ export default function SignupForm() {
         ...formData,
         age: form.age ? Number(form.age) : null,
         ngo_name: form.ngo_name || null,
+        educational_email: form.educational_email || null,
       }
 
       const row = await createApplication(payload)
@@ -79,6 +82,7 @@ export default function SignupForm() {
       // Fire-and-forget email — don't block success screen if it fails
       sendConfirmationEmail({
         toEmail: form.email,
+        educationalEmail: form.educational_email || null,
         fullName: form.full_name,
         programmeName: form.programme_name,
         applicationId: row.id,
@@ -129,13 +133,24 @@ export default function SignupForm() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Correo Electrónico *"
+              label="Correo de Contacto *"
               type="email"
               fullWidth
               value={form.email}
               onChange={handleChange('email')}
               error={Boolean(errors.email)}
               helperText={errors.email}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Correo Electrónico Educativo"
+              type="email"
+              fullWidth
+              value={form.educational_email}
+              onChange={handleChange('educational_email')}
+              error={Boolean(errors.educational_email)}
+              helperText={errors.educational_email}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -148,16 +163,6 @@ export default function SignupForm() {
               error={Boolean(errors.age)}
               helperText={errors.age}
               inputProps={{ min: 1, max: 119 }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              label="Identificación *"
-              fullWidth
-              value={form.identificacion}
-              onChange={handleChange('identificacion')}
-              error={Boolean(errors.identificacion)}
-              helperText={errors.identificacion}
             />
           </Grid>
         </Grid>

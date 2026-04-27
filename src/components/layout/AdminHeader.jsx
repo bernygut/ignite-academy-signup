@@ -1,12 +1,16 @@
+import { useState } from 'react'
 import { AppBar, Box, Chip, IconButton, Toolbar, Tooltip, Typography } from '@mui/material'
 import SchoolIcon from '@mui/icons-material/School'
 import LogoutIcon from '@mui/icons-material/Logout'
+import LockResetIcon from '@mui/icons-material/LockReset'
 import { useAuth } from '../../context/AuthContext'
 import { useSnackbar } from '../../context/SnackbarContext'
+import ChangePasswordDialog from '../admin/ChangePasswordDialog'
 
 export default function AdminHeader() {
   const { session, signOut } = useAuth()
   const { showSnack } = useSnackbar()
+  const [changePwOpen, setChangePwOpen] = useState(false)
 
   async function handleLogout() {
     try {
@@ -31,6 +35,11 @@ export default function AdminHeader() {
               sx={{ bgcolor: 'primary.dark', color: 'white' }}
             />
           )}
+          <Tooltip title="Cambiar contraseña">
+            <IconButton color="inherit" onClick={() => setChangePwOpen(true)}>
+              <LockResetIcon />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Cerrar sesión">
             <IconButton color="inherit" onClick={handleLogout}>
               <LogoutIcon />
@@ -38,6 +47,7 @@ export default function AdminHeader() {
           </Tooltip>
         </Box>
       </Toolbar>
+      <ChangePasswordDialog open={changePwOpen} onClose={() => setChangePwOpen(false)} />
     </AppBar>
   )
 }

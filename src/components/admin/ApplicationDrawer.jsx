@@ -68,7 +68,7 @@ export default function ApplicationDrawer({ application, onClose, onSave }) {
           <Section label="Nombre" value={application.full_name} />
           <Section label="Correo" value={application.email} />
           {application.age && <Section label="Edad" value={application.age} />}
-          {application.identificacion && <Section label="Identificación" value={application.identificacion} />}
+          {application.educational_email && <Section label="Correo Educativo" value={application.educational_email} />}
           {application.diversity_group && <Section label="Grupo Patrocinador" value={application.diversity_group} />}
           {application.ngo_name && <Section label="ONG" value={application.ngo_name} />}
           <Section

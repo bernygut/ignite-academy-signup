@@ -1,11 +1,16 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   Box,
   Button,
+  Checkbox,
   CircularProgress,
+  FormControlLabel,
+  FormHelperText,
   Grid,
   MenuItem,
   TextField,
+  Typography,
 } from '@mui/material'
 import FormSection from './FormSection'
 import ProgrammeSelect from './ProgrammeSelect'
@@ -51,6 +56,8 @@ export default function SignupForm() {
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(null) // { id, full_name, email }
+  const [acknowledged, setAcknowledged] = useState(false)
+  const [ackError, setAckError] = useState(false)
 
   function handleChange(field) {
     return (e) => {
@@ -64,6 +71,10 @@ export default function SignupForm() {
     const validationErrors = validate(form)
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
+      return
+    }
+    if (!acknowledged) {
+      setAckError(true)
       return
     }
 
@@ -209,6 +220,38 @@ export default function SignupForm() {
           helperText={errors.programme_id}
         />
       </FormSection>
+
+      <Box sx={{ mt: 3, mb: 1 }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={acknowledged}
+              onChange={(e) => {
+                setAcknowledged(e.target.checked)
+                if (e.target.checked) setAckError(false)
+              }}
+              color="primary"
+            />
+          }
+          label={
+            <Typography variant="body2">
+              Entiendo que al enviar esta solicitud me comprometo a participar en un curso de aproximadamente
+              10 semanas los sábados de 9:00 a.m. a 12:00 p.m., y acepto que mis datos personales serán
+              tratados conforme a la{' '}
+              <Link to="/privacy" target="_blank" rel="noopener noreferrer">
+                Política de Privacidad
+              </Link>{' '}
+              de Ignite Academy. *
+            </Typography>
+          }
+          sx={{ alignItems: 'flex-start', '& .MuiCheckbox-root': { pt: 0.5 } }}
+        />
+        {ackError && (
+          <FormHelperText error sx={{ ml: 4 }}>
+            Debes aceptar los términos antes de enviar tu solicitud.
+          </FormHelperText>
+        )}
+      </Box>
 
       <Box sx={{ textAlign: 'center', mt: 2 }}>
         <Button

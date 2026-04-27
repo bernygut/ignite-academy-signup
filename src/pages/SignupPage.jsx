@@ -8,7 +8,10 @@ export default function SignupPage() {
       <PublicHeader />
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography variant="h4" gutterBottom>
-          Aplicar a Ignite Academy
+          Solicitud a participar en Ignite Academy
+        </Typography>
+        <Typography variant="subtitle1" color="primary" fontWeight={600} sx={{ mb: 0.5 }}>
+          Primer Semestre 2026
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
           Completa el formulario para enviar tu solicitud. Los campos marcados con * son obligatorios.

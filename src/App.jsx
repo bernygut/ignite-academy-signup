@@ -7,6 +7,7 @@ import AlertSnackbar from './components/common/AlertSnackbar'
 import SignupPage from './pages/SignupPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import { CircularProgress, Box } from '@mui/material'
 
 function RequireAuth({ children }) {
@@ -32,6 +33,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<SignupPage />} />
+      <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route
         path="/admin"

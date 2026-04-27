@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ThemeProvider, CssBaseline } from '@mui/material'
 import theme from './theme/theme'
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -53,9 +53,9 @@ export default function App() {
       <CssBaseline />
       <AuthProvider>
         <SnackbarProvider>
-          <BrowserRouter basename="/ignite-academy-signup">
+          <HashRouter>
             <AppRoutes />
-          </BrowserRouter>
+          </HashRouter>
           <AlertSnackbar />
         </SnackbarProvider>
       </AuthProvider>

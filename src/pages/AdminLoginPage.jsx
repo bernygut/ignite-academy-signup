@@ -13,17 +13,19 @@ import SchoolIcon from '@mui/icons-material/School'
 import { useAuth } from '../context/AuthContext'
 
 export default function AdminLoginPage() {
-  const { session, signIn } = useAuth()
+  const { session, role, profileLoading, signIn } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const [email, setEmail]     = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError]     = useState('')
 
-  // Already logged in — go to admin dashboard
+  // Redirect once session + role are both resolved
   useEffect(() => {
-    if (session) navigate('/admin', { replace: true })
-  }, [session, navigate])
+    if (session && !profileLoading) {
+      navigate(role === 'instructor' ? '/attendance' : '/admin', { replace: true })
+    }
+  }, [session, role, profileLoading, navigate])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -31,7 +33,7 @@ export default function AdminLoginPage() {
     setLoading(true)
     try {
       await signIn(email, password)
-      navigate('/admin', { replace: true })
+      // Navigation happens via the useEffect above once role resolves
     } catch (err) {
       setError(err.message || 'Error al iniciar sesión. Verifica tus credenciales.')
     } finally {
@@ -55,7 +57,7 @@ export default function AdminLoginPage() {
           <Box sx={{ textAlign: 'center', mb: 3 }}>
             <SchoolIcon color="primary" sx={{ fontSize: 48 }} />
             <Typography variant="h5" fontWeight={700}>
-              Inicio de Sesión Admin
+              Inicio de Sesión
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Ignite Academy

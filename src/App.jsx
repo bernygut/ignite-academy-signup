@@ -4,17 +4,18 @@ import theme from './theme/theme'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { SnackbarProvider } from './context/SnackbarContext'
 import AlertSnackbar from './components/common/AlertSnackbar'
+import { CircularProgress, Box } from '@mui/material'
 import SignupPage from './pages/SignupPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
+import AttendancePage from './pages/AttendancePage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
-import { CircularProgress, Box } from '@mui/material'
+import SetPasswordPage from './pages/SetPasswordPage'
 
-function RequireAuth({ children }) {
-  const { session } = useAuth()
+function RequireRole({ children, allowedRoles }) {
+  const { session, role, profileLoading } = useAuth()
 
-  // Still loading session from Supabase (undefined = loading, null = not authed)
-  if (session === undefined) {
+  if (session === undefined || profileLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
         <CircularProgress />
@@ -22,28 +23,39 @@ function RequireAuth({ children }) {
     )
   }
 
-  if (!session) {
-    return <Navigate to="/admin/login" replace />
-  }
+  if (!session) return <Navigate to="/admin/login" replace />
+  if (!allowedRoles.includes(role)) return <Navigate to="/" replace />
 
   return children
 }
 
 function AppRoutes() {
+  const { needsPasswordSet } = useAuth()
+
+  // Intercept all routing when the user arrived via an invite link
+  if (needsPasswordSet) return <SetPasswordPage />
+
   return (
     <Routes>
-      <Route path="/" element={<SignupPage />} />
-      <Route path="/privacy" element={<PrivacyPolicyPage />} />
-      <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route path="/"             element={<SignupPage />} />
+      <Route path="/privacy"      element={<PrivacyPolicyPage />} />
+      <Route path="/admin/login"  element={<AdminLoginPage />} />
       <Route
         path="/admin"
         element={
-          <RequireAuth>
+          <RequireRole allowedRoles={['admin']}>
             <AdminDashboardPage />
-          </RequireAuth>
+          </RequireRole>
         }
       />
-      {/* Catch-all: redirect to signup form */}
+      <Route
+        path="/attendance"
+        element={
+          <RequireRole allowedRoles={['admin', 'instructor']}>
+            <AttendancePage />
+          </RequireRole>
+        }
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

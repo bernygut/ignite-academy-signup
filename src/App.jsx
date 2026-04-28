@@ -11,9 +11,11 @@ import AdminDashboardPage from './pages/AdminDashboardPage'
 import AttendancePage from './pages/AttendancePage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import SetPasswordPage from './pages/SetPasswordPage'
+import MfaChallengeScreen from './components/auth/MfaChallengeScreen'
+import MfaEnrollScreen from './components/auth/MfaEnrollScreen'
 
 function RequireRole({ children, allowedRoles }) {
-  const { session, role, profileLoading } = useAuth()
+  const { session, role, profileLoading, mfaLevel, refreshMfaLevel } = useAuth()
 
   if (session === undefined || profileLoading) {
     return (
@@ -25,6 +27,16 @@ function RequireRole({ children, allowedRoles }) {
 
   if (!session) return <Navigate to="/admin/login" replace />
   if (!allowedRoles.includes(role)) return <Navigate to="/" replace />
+
+  // Any user who has enrolled MFA but hasn't completed the challenge this session
+  if (mfaLevel.current === 'aal1' && mfaLevel.next === 'aal2') {
+    return <MfaChallengeScreen onSuccess={refreshMfaLevel} />
+  }
+
+  // Admins must have MFA enrolled — force the enrollment flow if they don't
+  if (role === 'admin' && mfaLevel.next === 'aal1') {
+    return <MfaEnrollScreen mandatory onSuccess={refreshMfaLevel} />
+  }
 
   return children
 }

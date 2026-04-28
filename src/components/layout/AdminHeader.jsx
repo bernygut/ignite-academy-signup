@@ -5,10 +5,12 @@ import SchoolIcon from '@mui/icons-material/School'
 import LogoutIcon from '@mui/icons-material/Logout'
 import LockResetIcon from '@mui/icons-material/LockReset'
 import PeopleIcon from '@mui/icons-material/People'
+import SecurityIcon from '@mui/icons-material/Security'
 import { useAuth } from '../../context/AuthContext'
 import { useSnackbar } from '../../context/SnackbarContext'
 import ChangePasswordDialog from '../admin/ChangePasswordDialog'
 import UserManagementDialog from '../admin/UserManagementDialog'
+import MfaSetupDialog from '../auth/MfaSetupDialog'
 
 export default function AdminHeader() {
   const { session, role, signOut } = useAuth()
@@ -17,6 +19,7 @@ export default function AdminHeader() {
   const location = useLocation()
   const [changePwOpen, setChangePwOpen]       = useState(false)
   const [instructorsOpen, setInstructorsOpen] = useState(false)
+  const [mfaOpen, setMfaOpen]                = useState(false)
 
   const isAdmin      = role === 'admin'
   const onAdmin      = location.pathname === '/admin'
@@ -68,6 +71,12 @@ export default function AdminHeader() {
             </Tooltip>
           )}
 
+          <Tooltip title="Autenticación de dos factores">
+            <IconButton color="inherit" onClick={() => setMfaOpen(true)}>
+              <SecurityIcon />
+            </IconButton>
+          </Tooltip>
+
           <Tooltip title="Cambiar contraseña">
             <IconButton color="inherit" onClick={() => setChangePwOpen(true)}>
               <LockResetIcon />
@@ -84,6 +93,7 @@ export default function AdminHeader() {
 
       <ChangePasswordDialog open={changePwOpen} onClose={() => setChangePwOpen(false)} />
       <UserManagementDialog open={instructorsOpen} onClose={() => setInstructorsOpen(false)} />
+      <MfaSetupDialog open={mfaOpen} onClose={() => setMfaOpen(false)} />
     </AppBar>
   )
 }

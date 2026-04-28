@@ -12,6 +12,29 @@ export async function fetchUsers() {
   return data
 }
 
+export async function deleteUser(userId) {
+  const { data: { session } } = await supabase.auth.getSession()
+
+  const res = await fetch(
+    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId }),
+    }
+  )
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.error || 'Error al eliminar el usuario.')
+  }
+
+  return res.json()
+}
+
 export async function inviteUser({ email, fullName, role }) {
   const { data: { session } } = await supabase.auth.getSession()
 

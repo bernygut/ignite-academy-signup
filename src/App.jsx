@@ -11,6 +11,7 @@ import AdminDashboardPage from './pages/AdminDashboardPage'
 import AttendancePage from './pages/AttendancePage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import SetPasswordPage from './pages/SetPasswordPage'
+import UsersPage from './pages/UsersPage'
 import MfaChallengeScreen from './components/auth/MfaChallengeScreen'
 import MfaEnrollScreen from './components/auth/MfaEnrollScreen'
 
@@ -65,6 +66,14 @@ function AppRoutes() {
         element={
           <RequireRole allowedRoles={['admin', 'instructor']}>
             <AttendancePage />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/users"
+        element={
+          <RequireRole allowedRoles={['admin']}>
+            <UsersPage />
           </RequireRole>
         }
       />

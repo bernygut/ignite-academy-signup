@@ -3,7 +3,6 @@ import * as XLSX from 'xlsx'
 const COLUMNS = [
   { key: 'full_name', label: 'Full Name' },
   { key: 'email', label: 'Email' },
-  { key: 'phone', label: 'Phone' },
   { key: 'age', label: 'Age' },
   { key: 'ngo_name', label: 'NGO Name' },
   { key: 'diversity_group', label: 'Grupo Patrocinador' },
@@ -17,7 +16,6 @@ function flattenApplication(app) {
   return {
     full_name: app.full_name,
     email: app.email,
-    phone: app.phone ?? '',
     age: app.age ?? '',
     ngo_name: app.ngo_name ?? '',
     diversity_group: app.diversity_group ?? '',

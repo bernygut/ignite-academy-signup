@@ -19,7 +19,7 @@ import {
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { STATUS_COLORS, STATUS_LABELS } from '../../utils/constants'
 
-const ROWS_PER_PAGE_OPTIONS = [10, 25, 50]
+const ROWS_PER_PAGE_OPTIONS = [10, 25, 50, 200]
 
 const COLUMNS = [
   { id: 'full_name', label: 'Nombre', sortable: true },

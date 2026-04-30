@@ -48,7 +48,14 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       if (session) {
-        fetchUserState(session.user.id)
+        if (LAUNCHED_FROM_INVITE) {
+          setRole('instructor')
+          setNeedsPasswordSet(true)
+          setMfaLevel({ current: 'aal1', next: 'aal1' })
+          setProfileLoading(false)
+        } else {
+          fetchUserState(session.user.id)
+        }
       } else {
         setProfileLoading(false)
       }
@@ -58,7 +65,7 @@ export function AuthProvider({ children }) {
       (event, session) => {
         setSession(session)
         if (session) {
-          if (LAUNCHED_FROM_INVITE && event === 'SIGNED_IN') {
+          if (LAUNCHED_FROM_INVITE && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
             // New invited user — role and MFA set optimistically; real values
             // arrive via fetchUserState when USER_UPDATED fires after password set.
             setRole('instructor')

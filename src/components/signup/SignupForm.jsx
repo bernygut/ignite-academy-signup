@@ -15,7 +15,7 @@ import {
 import FormSection from './FormSection'
 import ProgrammeSelect from './ProgrammeSelect'
 import SuccessScreen from './SuccessScreen'
-import { createApplication } from '../../services/applicationService'
+import { checkEmailExists, createApplication } from '../../services/applicationService'
 import { sendConfirmationEmail } from '../../services/emailService'
 import { DIVERSITY_GROUP_OPTIONS } from '../../utils/constants'
 import { useSnackbar } from '../../context/SnackbarContext'
@@ -80,6 +80,13 @@ export default function SignupForm() {
 
     setSubmitting(true)
     try {
+      const alreadyRegistered = await checkEmailExists(form.email)
+      if (alreadyRegistered) {
+        setErrors({ email: 'Este correo ya tiene una solicitud registrada.' })
+        setSubmitting(false)
+        return
+      }
+
       const { programme_name, ...formData } = form
       const payload = {
         ...formData,

@@ -1,5 +1,13 @@
 import supabase from '../lib/supabaseClient'
 
+export async function checkEmailExists(email) {
+  const { data, error } = await supabase.rpc('email_already_registered', {
+    check_email: email,
+  })
+  if (error) throw error
+  return data // boolean
+}
+
 export async function createApplication(data) {
   const id = crypto.randomUUID()
   const { error } = await supabase

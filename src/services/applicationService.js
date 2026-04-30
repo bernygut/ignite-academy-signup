@@ -49,11 +49,18 @@ export async function deleteApplication(id) {
   if (error) throw error
 }
 
-export async function updateApplication(id, { status, adminNotes }) {
+export async function updateApplication(id, { status, adminNotes, fullName, email, age, educationalEmail, diversityGroup, ngoName, programmeId }) {
   const updates = {
     status,
     admin_notes: adminNotes,
     reviewed_at: new Date().toISOString(),
+    full_name:        fullName,
+    email,
+    age:              age ? Number(age) : null,
+    educational_email: educationalEmail || null,
+    diversity_group:  diversityGroup || null,
+    ngo_name:         ngoName || null,
+    programme_id:     programmeId,
   }
 
   const { data: { session } } = await supabase.auth.getSession()

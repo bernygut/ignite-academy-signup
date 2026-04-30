@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import {
   Box,
   Button,
-  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -12,7 +11,6 @@ import {
   Divider,
   Drawer,
   FormControl,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -22,30 +20,65 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { APPLICATION_STATUS, STATUS_COLORS, STATUS_LABELS } from '../../utils/constants'
+import supabase from '../../lib/supabaseClient'
+import { STATUS_COLORS, STATUS_LABELS, DIVERSITY_GROUP_OPTIONS } from '../../utils/constants'
 import { useSnackbar } from '../../context/SnackbarContext'
 
 const DRAWER_WIDTH = 420
 
+const EMPTY = {
+  full_name: '', email: '', age: '', educational_email: '',
+  diversity_group: '', ngo_name: '', programme_id: '', status: '', admin_notes: '',
+}
+
 export default function ApplicationDrawer({ application, onClose, onSave, onDelete }) {
   const { showSnack } = useSnackbar()
-  const [status, setStatus] = useState('')
-  const [notes, setNotes] = useState('')
-  const [saving, setSaving] = useState(false)
+  const [form, setForm]             = useState(EMPTY)
+  const [programmes, setProgrammes] = useState([])
+  const [saving, setSaving]         = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const [deleting, setDeleting] = useState(false)
+  const [deleting, setDeleting]     = useState(false)
+
+  useEffect(() => {
+    supabase.from('programmes').select('id, name').eq('is_active', true).then(({ data }) => {
+      if (data) setProgrammes(data)
+    })
+  }, [])
 
   useEffect(() => {
     if (application) {
-      setStatus(application.status)
-      setNotes(application.admin_notes ?? '')
+      setForm({
+        full_name:         application.full_name ?? '',
+        email:             application.email ?? '',
+        age:               application.age ?? '',
+        educational_email: application.educational_email ?? '',
+        diversity_group:   application.diversity_group ?? '',
+        ngo_name:          application.ngo_name ?? '',
+        programme_id:      application.programmes?.id ?? '',
+        status:            application.status ?? '',
+        admin_notes:       application.admin_notes ?? '',
+      })
     }
   }, [application])
+
+  function set(field) {
+    return (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }))
+  }
 
   async function handleSave() {
     setSaving(true)
     try {
-      await onSave(application.id, { status, adminNotes: notes })
+      await onSave(application.id, {
+        status:           form.status,
+        adminNotes:       form.admin_notes,
+        fullName:         form.full_name,
+        email:            form.email,
+        age:              form.age,
+        educationalEmail: form.educational_email,
+        diversityGroup:   form.diversity_group,
+        ngoName:          form.ngo_name,
+        programmeId:      form.programme_id,
+      })
       showSnack('Solicitud actualizada.', 'success')
       onClose()
     } catch (err) {
@@ -79,43 +112,84 @@ export default function ApplicationDrawer({ application, onClose, onSave, onDele
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Typography variant="h6">Detalles de la Solicitud</Typography>
-        <IconButton onClick={onClose}><CloseIcon /></IconButton>
+        <Button size="small" startIcon={<CloseIcon />} onClick={onClose} color="inherit">
+          Cerrar
+        </Button>
       </Toolbar>
       <Divider />
 
       {application && (
-        <Box sx={{ p: 3, overflowY: 'auto', flex: 1 }}>
-          {/* Read-only summary */}
-          <Section label="Nombre" value={application.full_name} />
-          <Section label="Correo" value={application.email} />
-          {application.age && <Section label="Edad" value={application.age} />}
-          {application.educational_email && <Section label="Correo Educativo" value={application.educational_email} />}
-          {application.diversity_group && <Section label="Grupo Patrocinador" value={application.diversity_group} />}
-          {application.ngo_name && <Section label="ONG" value={application.ngo_name} />}
-          <Section
-            label="Programa"
-            value={`${application.programmes?.name ?? ''}${application.programmes?.cohort ? ` – ${application.programmes.cohort}` : ''}`}
-          />
-          <Section
-            label="Enviada"
-            value={new Date(application.submitted_at).toLocaleString()}
+        <Box sx={{ p: 3, overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+          <TextField
+            label="Nombre completo"
+            fullWidth
+            value={form.full_name}
+            onChange={set('full_name')}
           />
 
-          <Divider sx={{ my: 2 }} />
+          <TextField
+            label="Correo de contacto"
+            type="email"
+            fullWidth
+            value={form.email}
+            onChange={set('email')}
+          />
 
-          {/* Editable fields */}
-          <FormControl fullWidth sx={{ mb: 2 }}>
+          <TextField
+            label="Correo educativo"
+            type="email"
+            fullWidth
+            value={form.educational_email}
+            onChange={set('educational_email')}
+          />
+
+          <TextField
+            label="Edad"
+            type="number"
+            fullWidth
+            value={form.age}
+            onChange={set('age')}
+            inputProps={{ min: 1, max: 119 }}
+          />
+
+          <FormControl fullWidth>
+            <InputLabel>Grupo Patrocinador</InputLabel>
+            <Select value={form.diversity_group} label="Grupo Patrocinador" onChange={set('diversity_group')}>
+              <MenuItem value=""><em>Sin grupo</em></MenuItem>
+              {DIVERSITY_GROUP_OPTIONS.map((g) => (
+                <MenuItem key={g} value={g}>{g}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <TextField
+            label="ONG / Organización"
+            fullWidth
+            value={form.ngo_name}
+            onChange={set('ngo_name')}
+          />
+
+          <FormControl fullWidth>
+            <InputLabel>Programa</InputLabel>
+            <Select value={form.programme_id} label="Programa" onChange={set('programme_id')}>
+              {programmes.map((p) => (
+                <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <Typography variant="caption" color="text.secondary">
+            Enviada: {new Date(application.submitted_at).toLocaleString()}
+          </Typography>
+
+          <Divider />
+
+          <FormControl fullWidth>
             <InputLabel>Estado</InputLabel>
-            <Select value={status} label="Estado" onChange={(e) => setStatus(e.target.value)}>
+            <Select value={form.status} label="Estado" onChange={set('status')}>
               {Object.entries(STATUS_LABELS).map(([val, label]) => (
-                <MenuItem key={val} value={val}>
-                  <Chip
-                    label={label}
-                    color={STATUS_COLORS[val]}
-                    size="small"
-                    sx={{ mr: 1 }}
-                  />
-                </MenuItem>
+                <MenuItem key={val} value={val}>{label}</MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -125,9 +199,8 @@ export default function ApplicationDrawer({ application, onClose, onSave, onDele
             multiline
             rows={4}
             fullWidth
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            sx={{ mb: 3 }}
+            value={form.admin_notes}
+            onChange={set('admin_notes')}
           />
 
           <Button
@@ -136,12 +209,11 @@ export default function ApplicationDrawer({ application, onClose, onSave, onDele
             onClick={handleSave}
             disabled={saving}
             startIcon={saving ? <CircularProgress size={18} color="inherit" /> : null}
-            sx={{ mb: 2 }}
           >
             {saving ? 'Guardando…' : 'Guardar Cambios'}
           </Button>
 
-          <Divider sx={{ mb: 2 }} />
+          <Divider />
 
           <Button
             variant="outlined"
@@ -180,16 +252,5 @@ export default function ApplicationDrawer({ application, onClose, onSave, onDele
         </DialogActions>
       </Dialog>
     </Drawer>
-  )
-}
-
-function Section({ label, value }) {
-  return (
-    <Box sx={{ mb: 1.5 }}>
-      <Typography variant="caption" color="text.secondary" display="block">
-        {label}
-      </Typography>
-      <Typography variant="body2">{value || '–'}</Typography>
-    </Box>
   )
 }

@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import supabase from '../lib/supabaseClient'
 
-// Captured synchronously at module load — before Supabase processes the URL hash.
-// Supabase invite links redirect with #access_token=...&type=invite in the fragment.
-const LAUNCHED_FROM_INVITE = window.location.hash.includes('type=invite')
+// Set by the inline script in index.html before any JS loads — the only safe
+// place to read the hash before Supabase's createClient() clears it.
+const LAUNCHED_FROM_INVITE = sessionStorage.getItem('__ignite_invite__') === '1'
 
 const AuthContext = createContext(null)
 
@@ -99,6 +99,7 @@ export function AuthProvider({ children }) {
 
   function clearInviteState() {
     setNeedsPasswordSet(false)
+    sessionStorage.removeItem('__ignite_invite__')
   }
 
   return (

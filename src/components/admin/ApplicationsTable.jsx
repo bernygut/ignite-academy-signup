@@ -58,7 +58,7 @@ export default function ApplicationsTable({ applications, loading, onEdit, onDel
   const [order, setOrder] = useState('desc')
   const [orderBy, setOrderBy] = useState('submitted_at')
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [rowsPerPage, setRowsPerPage] = useState(200)
   const [toDelete, setToDelete] = useState(null)
   const [deleting, setDeleting] = useState(false)
 

@@ -42,9 +42,12 @@ function validate(form) {
   if (form.educational_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.educational_email)) {
     errors.educational_email = 'Ingresa un correo educativo válido'
   }
-  if (form.age && (isNaN(Number(form.age)) || Number(form.age) < 1 || Number(form.age) > 119)) {
+  if (!form.age) {
+    errors.age = 'La edad es requerida'
+  } else if (isNaN(Number(form.age)) || Number(form.age) < 1 || Number(form.age) > 119) {
     errors.age = 'Ingresa una edad válida (1–119)'
   }
+  if (!form.ngo_name?.trim()) errors.ngo_name = 'La ONG es requerida'
   if (!form.diversity_group) errors.diversity_group = 'Por favor selecciona un grupo'
   if (!form.programme_id) errors.programme_id = 'Por favor selecciona un programa'
   return errors
@@ -173,7 +176,7 @@ export default function SignupForm() {
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
-              label="Edad"
+              label="Edad *"
               type="number"
               fullWidth
               value={form.age}
@@ -205,12 +208,14 @@ export default function SignupForm() {
           </FormSection>
         </Box>
         <Box sx={{ flex: 1, minWidth: 240 }}>
-          <FormSection title="Detalles de la Organización">
+          <FormSection title="Detalles de la Organización (ONG)">
             <TextField
-              label="Nombre de la ONG / Organización"
+              label="ONG que te contó de los cursos *"
               fullWidth
               value={form.ngo_name}
               onChange={handleChange('ngo_name')}
+              error={Boolean(errors.ngo_name)}
+              helperText={errors.ngo_name}
             />
           </FormSection>
         </Box>

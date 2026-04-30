@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { fetchApplications, updateApplication } from '../services/applicationService'
+import { deleteApplication, fetchApplications, updateApplication } from '../services/applicationService'
 
 export function useApplications(filters = {}) {
   const [applications, setApplications] = useState([])
@@ -34,5 +34,10 @@ export function useApplications(filters = {}) {
     await load()
   }
 
-  return { applications, loading, error, reload: load, update }
+  async function remove(id) {
+    await deleteApplication(id)
+    await load()
+  }
+
+  return { applications, loading, error, reload: load, update, remove }
 }

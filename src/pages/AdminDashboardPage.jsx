@@ -14,7 +14,7 @@ const INITIAL_FILTERS = { status: '', programmeId: '', dateFrom: '', dateTo: '' 
 export default function AdminDashboardPage() {
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const [selected, setSelected] = useState(null)
-  const { applications, loading, error, update } = useApplications(filters)
+  const { applications, loading, error, update, remove } = useApplications(filters)
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -48,6 +48,7 @@ export default function AdminDashboardPage() {
           application={selected}
           onClose={() => setSelected(null)}
           onSave={update}
+          onDelete={(id) => { setSelected(null); remove(id) }}
         />
       </Container>
     </Box>

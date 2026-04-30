@@ -4,6 +4,11 @@ import {
   Button,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   Drawer,
   FormControl,
@@ -16,16 +21,19 @@ import {
   Typography,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { APPLICATION_STATUS, STATUS_COLORS, STATUS_LABELS } from '../../utils/constants'
 import { useSnackbar } from '../../context/SnackbarContext'
 
 const DRAWER_WIDTH = 420
 
-export default function ApplicationDrawer({ application, onClose, onSave }) {
+export default function ApplicationDrawer({ application, onClose, onSave, onDelete }) {
   const { showSnack } = useSnackbar()
   const [status, setStatus] = useState('')
   const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     if (application) {
@@ -44,6 +52,19 @@ export default function ApplicationDrawer({ application, onClose, onSave }) {
       showSnack(err.message || 'Error al guardar los cambios.', 'error')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleDelete() {
+    setDeleting(true)
+    try {
+      await onDelete(application.id)
+      showSnack('Solicitud eliminada.', 'success')
+      setConfirmDelete(false)
+    } catch (err) {
+      showSnack(err.message || 'Error al eliminar la solicitud.', 'error')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -115,11 +136,49 @@ export default function ApplicationDrawer({ application, onClose, onSave }) {
             onClick={handleSave}
             disabled={saving}
             startIcon={saving ? <CircularProgress size={18} color="inherit" /> : null}
+            sx={{ mb: 2 }}
           >
             {saving ? 'Guardando…' : 'Guardar Cambios'}
           </Button>
+
+          <Divider sx={{ mb: 2 }} />
+
+          <Button
+            variant="outlined"
+            color="error"
+            fullWidth
+            startIcon={<DeleteIcon />}
+            onClick={() => setConfirmDelete(true)}
+            disabled={saving}
+          >
+            Eliminar solicitud
+          </Button>
         </Box>
       )}
+
+      <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Eliminar solicitud</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ¿Seguro que deseas eliminar la solicitud de{' '}
+            <strong>{application?.full_name}</strong>? Esta acción no se puede deshacer.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setConfirmDelete(false)} disabled={deleting}>
+            Cancelar
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={handleDelete}
+            disabled={deleting}
+            startIcon={deleting ? <CircularProgress size={16} color="inherit" /> : null}
+          >
+            {deleting ? 'Eliminando…' : 'Eliminar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Drawer>
   )
 }

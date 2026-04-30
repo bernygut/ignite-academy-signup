@@ -42,6 +42,7 @@ export default function AdminDashboardPage() {
           applications={applications}
           loading={loading}
           onEdit={setSelected}
+          onDelete={remove}
         />
 
         <ApplicationDrawer

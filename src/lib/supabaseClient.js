@@ -10,6 +10,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
   )
 }
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
+const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    flowType: 'implicit',   // invite links redirect with #access_token= (not PKCE ?code=)
+    detectSessionInUrl: true,
+  },
+})
 
 export default supabase

@@ -1,9 +1,22 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import supabase from '../lib/supabaseClient'
 
-// Set by the inline script in index.html before any JS loads — the only safe
-// place to read the hash before Supabase's createClient() clears it.
-const LAUNCHED_FROM_INVITE = sessionStorage.getItem('__ignite_invite__') === '1'
+// Decodes the JWT payload and checks whether this session was created via
+// an invite OTP link (AMR method = "otp") rather than a password sign-in.
+// This is reliable regardless of URL processing order or browser behaviour.
+function isInviteSession(session) {
+  if (!session?.access_token) return false
+  try {
+    const payload = JSON.parse(atob(session.access_token.split('.')[1]))
+    const amr = payload.amr ?? []
+    return (
+      amr.some((m) => m.method === 'otp' || m.method === 'invite') &&
+      !amr.some((m) => m.method === 'password')
+    )
+  } catch {
+    return false
+  }
+}
 
 const AuthContext = createContext(null)
 
@@ -48,7 +61,7 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       if (session) {
-        if (LAUNCHED_FROM_INVITE) {
+        if (isInviteSession(session)) {
           setRole('instructor')
           setNeedsPasswordSet(true)
           setMfaLevel({ current: 'aal1', next: 'aal1' })
@@ -65,9 +78,12 @@ export function AuthProvider({ children }) {
       (event, session) => {
         setSession(session)
         if (session) {
-          if (LAUNCHED_FROM_INVITE && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
-            // New invited user — role and MFA set optimistically; real values
-            // arrive via fetchUserState when USER_UPDATED fires after password set.
+          // Only apply invite detection on new sign-in events, not on
+          // USER_UPDATED (which fires after the password is set).
+          if (
+            (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') &&
+            isInviteSession(session)
+          ) {
             setRole('instructor')
             setNeedsPasswordSet(true)
             setMfaLevel({ current: 'aal1', next: 'aal1' })
@@ -99,7 +115,6 @@ export function AuthProvider({ children }) {
 
   function clearInviteState() {
     setNeedsPasswordSet(false)
-    sessionStorage.removeItem('__ignite_invite__')
   }
 
   return (

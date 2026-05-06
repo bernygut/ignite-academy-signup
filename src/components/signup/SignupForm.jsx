@@ -17,7 +17,7 @@ import ProgrammeSelect from './ProgrammeSelect'
 import SuccessScreen from './SuccessScreen'
 import { checkEmailExists, createApplication } from '../../services/applicationService'
 import { sendConfirmationEmail } from '../../services/emailService'
-import { DIVERSITY_GROUP_OPTIONS } from '../../utils/constants'
+import { DIVERSITY_GROUP_OPTIONS, NGO_OPTIONS } from '../../utils/constants'
 import { useSnackbar } from '../../context/SnackbarContext'
 
 const INITIAL_FORM = {
@@ -210,13 +210,19 @@ export default function SignupForm() {
         <Box sx={{ flex: 1, minWidth: 240 }}>
           <FormSection title="Detalles de la Organización (ONG)">
             <TextField
+              select
               label="ONG que te contó de los cursos *"
               fullWidth
               value={form.ngo_name}
               onChange={handleChange('ngo_name')}
               error={Boolean(errors.ngo_name)}
               helperText={errors.ngo_name}
-            />
+            >
+              <MenuItem value=""><em>Selecciona una ONG</em></MenuItem>
+              {NGO_OPTIONS.map((n) => (
+                <MenuItem key={n} value={n}>{n}</MenuItem>
+              ))}
+            </TextField>
           </FormSection>
         </Box>
       </Box>

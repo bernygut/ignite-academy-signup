@@ -35,3 +35,13 @@ export const DIVERSITY_GROUP_OPTIONS = [
   'INDIGENOUS',
   'GLEAM',
 ]
+
+export const NGO_OPTIONS = [
+  'Fundación Monge',
+  'RedAfro',
+  'Aldeas Infantiles SOS',
+  'Rocket Girls',
+  'Ideas en Acción',
+  'CTP Ingeniero Carlos Pascua',
+  'IRCA',
+]

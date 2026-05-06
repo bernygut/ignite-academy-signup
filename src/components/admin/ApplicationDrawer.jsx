@@ -21,7 +21,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/Delete'
 import supabase from '../../lib/supabaseClient'
-import { STATUS_COLORS, STATUS_LABELS, DIVERSITY_GROUP_OPTIONS } from '../../utils/constants'
+import { STATUS_COLORS, STATUS_LABELS, DIVERSITY_GROUP_OPTIONS, NGO_OPTIONS } from '../../utils/constants'
 import { useSnackbar } from '../../context/SnackbarContext'
 
 const DRAWER_WIDTH = 420
@@ -163,12 +163,15 @@ export default function ApplicationDrawer({ application, onClose, onSave, onDele
             </Select>
           </FormControl>
 
-          <TextField
-            label="ONG / Organización"
-            fullWidth
-            value={form.ngo_name}
-            onChange={set('ngo_name')}
-          />
+          <FormControl fullWidth>
+            <InputLabel>ONG / Organización</InputLabel>
+            <Select value={form.ngo_name} label="ONG / Organización" onChange={set('ngo_name')}>
+              <MenuItem value=""><em>Sin ONG</em></MenuItem>
+              {NGO_OPTIONS.map((n) => (
+                <MenuItem key={n} value={n}>{n}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           <FormControl fullWidth>
             <InputLabel>Programa</InputLabel>

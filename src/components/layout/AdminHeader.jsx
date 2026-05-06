@@ -23,6 +23,7 @@ export default function AdminHeader() {
   const onAdmin      = location.pathname === '/admin'
   const onAttendance = location.pathname === '/attendance'
   const onUsers      = location.pathname === '/users'
+  const onStats      = location.pathname === '/stats'
 
   async function handleLogout() {
     try {
@@ -55,6 +56,11 @@ export default function AdminHeader() {
           {isAdmin && !onUsers && (
             <Button color="inherit" size="small" onClick={() => navigate('/users')}>
               Usuarios
+            </Button>
+          )}
+          {isAdmin && !onStats && (
+            <Button color="inherit" size="small" onClick={() => navigate('/stats')}>
+              Estadísticas
             </Button>
           )}
 

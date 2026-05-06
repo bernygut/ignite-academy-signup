@@ -1,5 +1,14 @@
 import supabase from '../lib/supabaseClient'
 
+export async function fetchStats() {
+  const { data, error } = await supabase
+    .from('applications')
+    .select('diversity_group, ngo_name, status')
+
+  if (error) throw error
+  return data
+}
+
 export async function checkEmailExists(email) {
   const { data, error } = await supabase.rpc('email_already_registered', {
     check_email: email,

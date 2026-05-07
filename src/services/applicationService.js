@@ -1,5 +1,16 @@
 import supabase from '../lib/supabaseClient'
 
+export async function fetchApplicationHistory(applicationId) {
+  const { data, error } = await supabase
+    .from('application_history')
+    .select('id, changed_at, changed_by_email, field_name, old_value, new_value')
+    .eq('application_id', applicationId)
+    .order('changed_at', { ascending: false })
+
+  if (error) throw error
+  return data
+}
+
 export async function fetchStats() {
   const { data, error } = await supabase
     .from('applications')

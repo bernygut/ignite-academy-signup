@@ -23,6 +23,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import supabase from '../../lib/supabaseClient'
 import { STATUS_COLORS, STATUS_LABELS, DIVERSITY_GROUP_OPTIONS, NGO_OPTIONS } from '../../utils/constants'
 import { useSnackbar } from '../../context/SnackbarContext'
+import ApplicationHistory from './ApplicationHistory'
 
 const DRAWER_WIDTH = 420
 
@@ -38,6 +39,7 @@ export default function ApplicationDrawer({ application, onClose, onSave, onDele
   const [saving, setSaving]         = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting]     = useState(false)
+  const [historyKey, setHistoryKey] = useState(0)
 
   useEffect(() => {
     supabase.from('programmes').select('id, name').eq('is_active', true).then(({ data }) => {
@@ -80,6 +82,7 @@ export default function ApplicationDrawer({ application, onClose, onSave, onDele
         programmeId:      form.programme_id,
       })
       showSnack('Solicitud actualizada.', 'success')
+      setHistoryKey((k) => k + 1)
       onClose()
     } catch (err) {
       showSnack(err.message || 'Error al guardar los cambios.', 'error')
@@ -228,6 +231,13 @@ export default function ApplicationDrawer({ application, onClose, onSave, onDele
           >
             Eliminar solicitud
           </Button>
+
+          <Divider sx={{ mt: 1 }} />
+
+          <Typography variant="subtitle2" sx={{ mt: 1 }}>
+            Historial de cambios
+          </Typography>
+          <ApplicationHistory applicationId={application.id} refreshKey={historyKey} />
         </Box>
       )}
 

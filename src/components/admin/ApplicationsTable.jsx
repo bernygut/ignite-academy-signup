@@ -152,7 +152,12 @@ export default function ApplicationsTable({ applications, loading, onEdit, onDel
                       </TableCell>
                       <TableCell>
                         <Typography variant="caption">
-                          {new Date(app.submitted_at).toLocaleDateString()}
+                          {new Date(app.submitted_at).toLocaleDateString()}{' '}
+                          {new Date(app.submitted_at).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false,
+                          })}
                         </Typography>
                       </TableCell>
                       <TableCell sx={{ whiteSpace: 'nowrap' }}>

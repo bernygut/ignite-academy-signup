@@ -107,7 +107,7 @@ export default function StatsPage() {
           </Box>
         ) : (
           <>
-            <CountTable title="Por Grupo Patrocinador" rows={byGroup} />
+            <CountTable title="Por Grupo de Inclusión" rows={byGroup} />
             <CountTable title="Por ONG" rows={byNgo} />
           </>
         )}

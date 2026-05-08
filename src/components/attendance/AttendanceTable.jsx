@@ -134,17 +134,14 @@ export default function AttendanceTable({
                 </TableCell>
 
                 {lessons.map((lesson) => {
-                  const isFuture = parseLocalDate(lesson.lesson_date) > TODAY
-                  const checked  = studentMap.get(lesson.id) === true
+                  const checked = studentMap.get(lesson.id) === true
 
                   return (
                     <TableCell key={lesson.id} align="center" padding="checkbox">
                       <Checkbox
                         size="small"
                         checked={checked}
-                        disabled={isFuture}
                         onChange={(e) => toggle(student.id, lesson.id, e.target.checked)}
-                        sx={isFuture ? { opacity: 0.3 } : undefined}
                       />
                     </TableCell>
                   )

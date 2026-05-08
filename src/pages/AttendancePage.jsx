@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Box, Container, Tab, Tabs, Typography } from '@mui/material'
 import AdminHeader from '../components/layout/AdminHeader'
 import AttendanceTable from '../components/attendance/AttendanceTable'
+import AttendanceChart from '../components/attendance/AttendanceChart'
 import AttendanceExportButton from '../components/attendance/AttendanceExportButton'
 import { useAttendance } from '../hooks/useAttendance'
 
@@ -54,6 +55,14 @@ export default function AttendancePage() {
           <Typography color="error" sx={{ mb: 2 }}>
             {error}
           </Typography>
+        )}
+
+        {!loading && (
+          <AttendanceChart
+            students={students}
+            lessons={lessons}
+            attendanceMap={attendanceMap}
+          />
         )}
 
         <AttendanceTable

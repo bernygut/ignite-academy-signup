@@ -16,7 +16,7 @@ export function useProgrammes() {
       supabase
         .from('applications')
         .select('programme_id')
-        .in('status', ['pending', 'approved']),
+        .eq('status', 'approved'),
     ]).then(([{ data: progs, error: progErr }, { data: apps, error: appErr }]) => {
       if (progErr || appErr) {
         setError((progErr || appErr).message)

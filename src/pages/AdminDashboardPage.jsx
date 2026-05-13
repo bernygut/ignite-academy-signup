@@ -9,7 +9,7 @@ import ExportButton from '../components/admin/ExportButton'
 import CapacityPanel from '../components/admin/CapacityPanel'
 import { useApplications } from '../hooks/useApplications'
 
-const INITIAL_FILTERS = { status: '', programmeId: '', dateFrom: '', dateTo: '' }
+const INITIAL_FILTERS = { status: '', programmeId: '', dateFrom: '', dateTo: '', ngoNames: [], diversityGroups: [] }
 
 export default function AdminDashboardPage() {
   const [filters, setFilters] = useState(INITIAL_FILTERS)

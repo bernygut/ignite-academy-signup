@@ -23,6 +23,8 @@ export function useApplications(filters = {}) {
     filters.programmeId,
     filters.dateFrom,
     filters.dateTo,
+    filters.ngoNames?.join(','),
+    filters.diversityGroups?.join(','),
   ])
 
   useEffect(() => {

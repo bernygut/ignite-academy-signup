@@ -38,7 +38,7 @@ export async function createApplication(data) {
   return { id }
 }
 
-export async function fetchApplications({ status, programmeId, dateFrom, dateTo } = {}) {
+export async function fetchApplications({ status, programmeId, dateFrom, dateTo, ngoNames, diversityGroups } = {}) {
   let query = supabase
     .from('applications')
     .select(`
@@ -53,6 +53,8 @@ export async function fetchApplications({ status, programmeId, dateFrom, dateTo 
   if (programmeId) query = query.eq('programme_id', programmeId)
   if (dateFrom) query = query.gte('submitted_at', dateFrom)
   if (dateTo) query = query.lte('submitted_at', dateTo)
+  if (ngoNames?.length) query = query.in('ngo_name', ngoNames)
+  if (diversityGroups?.length) query = query.in('diversity_group', diversityGroups)
 
   const { data, error } = await query
   if (error) throw error

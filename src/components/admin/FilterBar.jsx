@@ -1,7 +1,11 @@
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import { Box, Button, Checkbox, Chip, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, TextField } from '@mui/material'
 import ClearIcon from '@mui/icons-material/Clear'
 import { useProgrammes } from '../../hooks/useProgrammes'
-import { STATUS_LABELS } from '../../utils/constants'
+import { DIVERSITY_GROUP_OPTIONS, NGO_OPTIONS, STATUS_LABELS } from '../../utils/constants'
+
+const MENU_PROPS = {
+  PaperProps: { style: { maxHeight: 320 } },
+}
 
 export default function FilterBar({ filters, onChange }) {
   const { programmes } = useProgrammes()
@@ -11,10 +15,12 @@ export default function FilterBar({ filters, onChange }) {
   }
 
   function clear() {
-    onChange({ status: '', programmeId: '', dateFrom: '', dateTo: '' })
+    onChange({ status: '', programmeId: '', dateFrom: '', dateTo: '', ngoNames: [], diversityGroups: [] })
   }
 
-  const hasFilters = Object.values(filters).some(Boolean)
+  const hasFilters = Object.values(filters).some((v) =>
+    Array.isArray(v) ? v.length > 0 : Boolean(v)
+  )
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2, alignItems: 'center' }}>
@@ -35,6 +41,60 @@ export default function FilterBar({ filters, onChange }) {
           {programmes.map((p) => (
             <MenuItem key={p.id} value={p.id}>
               {p.name}{p.cohort ? ` – ${p.cohort}` : ''}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl size="small" sx={{ minWidth: 220, maxWidth: 360 }}>
+        <InputLabel>ONG</InputLabel>
+        <Select
+          multiple
+          value={filters.ngoNames ?? []}
+          onChange={set('ngoNames')}
+          input={<OutlinedInput label="ONG" />}
+          renderValue={(selected) =>
+            selected.length === 0
+              ? 'Todas'
+              : (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((v) => <Chip key={v} label={v} size="small" />)}
+                </Box>
+              )
+          }
+          MenuProps={MENU_PROPS}
+        >
+          {NGO_OPTIONS.map((n) => (
+            <MenuItem key={n} value={n}>
+              <Checkbox checked={(filters.ngoNames ?? []).includes(n)} size="small" />
+              <ListItemText primary={n} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl size="small" sx={{ minWidth: 220, maxWidth: 360 }}>
+        <InputLabel>Grupo de Inclusión</InputLabel>
+        <Select
+          multiple
+          value={filters.diversityGroups ?? []}
+          onChange={set('diversityGroups')}
+          input={<OutlinedInput label="Grupo de Inclusión" />}
+          renderValue={(selected) =>
+            selected.length === 0
+              ? 'Todos'
+              : (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((v) => <Chip key={v} label={v} size="small" />)}
+                </Box>
+              )
+          }
+          MenuProps={MENU_PROPS}
+        >
+          {DIVERSITY_GROUP_OPTIONS.map((g) => (
+            <MenuItem key={g} value={g}>
+              <Checkbox checked={(filters.diversityGroups ?? []).includes(g)} size="small" />
+              <ListItemText primary={g} />
             </MenuItem>
           ))}
         </Select>

@@ -38,7 +38,7 @@ export async function createApplication(data) {
   return { id }
 }
 
-export async function fetchApplications({ status, programmeId, dateFrom, dateTo, ngoNames, diversityGroups } = {}) {
+export async function fetchApplications({ statuses, programmeIds, dateFrom, dateTo, ngoNames, diversityGroups } = {}) {
   let query = supabase
     .from('applications')
     .select(`
@@ -49,11 +49,11 @@ export async function fetchApplications({ status, programmeId, dateFrom, dateTo,
     `)
     .order('submitted_at', { ascending: false })
 
-  if (status) query = query.eq('status', status)
-  if (programmeId) query = query.eq('programme_id', programmeId)
-  if (dateFrom) query = query.gte('submitted_at', dateFrom)
-  if (dateTo) query = query.lte('submitted_at', dateTo)
-  if (ngoNames?.length) query = query.in('ngo_name', ngoNames)
+  if (statuses?.length)        query = query.in('status', statuses)
+  if (programmeIds?.length)    query = query.in('programme_id', programmeIds)
+  if (dateFrom)                query = query.gte('submitted_at', dateFrom)
+  if (dateTo)                  query = query.lte('submitted_at', dateTo)
+  if (ngoNames?.length)        query = query.in('ngo_name', ngoNames)
   if (diversityGroups?.length) query = query.in('diversity_group', diversityGroups)
 
   const { data, error } = await query

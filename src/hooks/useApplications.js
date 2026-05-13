@@ -19,8 +19,8 @@ export function useApplications(filters = {}) {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    filters.status,
-    filters.programmeId,
+    filters.statuses?.join(','),
+    filters.programmeIds?.join(','),
     filters.dateFrom,
     filters.dateTo,
     filters.ngoNames?.join(','),

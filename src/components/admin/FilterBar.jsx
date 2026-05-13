@@ -7,6 +7,44 @@ const MENU_PROPS = {
   PaperProps: { style: { maxHeight: 320 } },
 }
 
+function MultiSelect({ label, value, options, onChange, getLabel, emptyText }) {
+  const selected = value ?? []
+  return (
+    <FormControl size="small" sx={{ minWidth: 200, maxWidth: 360 }}>
+      <InputLabel>{label}</InputLabel>
+      <Select
+        multiple
+        value={selected}
+        onChange={onChange}
+        input={<OutlinedInput label={label} />}
+        renderValue={(sel) =>
+          sel.length === 0
+            ? emptyText
+            : (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {sel.map((v) => (
+                  <Chip key={v} label={getLabel ? getLabel(v) : v} size="small" />
+                ))}
+              </Box>
+            )
+        }
+        MenuProps={MENU_PROPS}
+      >
+        {options.map((opt) => {
+          const val   = typeof opt === 'string' ? opt : opt.value
+          const label = typeof opt === 'string' ? opt : opt.label
+          return (
+            <MenuItem key={val} value={val}>
+              <Checkbox checked={selected.includes(val)} size="small" />
+              <ListItemText primary={label} />
+            </MenuItem>
+          )
+        })}
+      </Select>
+    </FormControl>
+  )
+}
+
 export default function FilterBar({ filters, onChange }) {
   const { programmes } = useProgrammes()
 
@@ -15,90 +53,54 @@ export default function FilterBar({ filters, onChange }) {
   }
 
   function clear() {
-    onChange({ status: '', programmeId: '', dateFrom: '', dateTo: '', ngoNames: [], diversityGroups: [] })
+    onChange({ statuses: [], programmeIds: [], dateFrom: '', dateTo: '', ngoNames: [], diversityGroups: [] })
   }
 
   const hasFilters = Object.values(filters).some((v) =>
     Array.isArray(v) ? v.length > 0 : Boolean(v)
   )
 
+  const statusOptions    = Object.entries(STATUS_LABELS).map(([value, label]) => ({ value, label }))
+  const programmeOptions = programmes.map((p) => ({
+    value: p.id,
+    label: `${p.name}${p.cohort ? ` – ${p.cohort}` : ''}`,
+  }))
+
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2, alignItems: 'center' }}>
-      <FormControl size="small" sx={{ minWidth: 140 }}>
-        <InputLabel>Estado</InputLabel>
-        <Select value={filters.status} label="Estado" onChange={set('status')}>
-          <MenuItem value=""><em>Todos</em></MenuItem>
-          {Object.entries(STATUS_LABELS).map(([val, label]) => (
-            <MenuItem key={val} value={val}>{label}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <MultiSelect
+        label="Estado"
+        value={filters.statuses}
+        options={statusOptions}
+        onChange={set('statuses')}
+        getLabel={(v) => STATUS_LABELS[v] ?? v}
+        emptyText="Todos"
+      />
 
-      <FormControl size="small" sx={{ minWidth: 200 }}>
-        <InputLabel>Programa</InputLabel>
-        <Select value={filters.programmeId} label="Programa" onChange={set('programmeId')}>
-          <MenuItem value=""><em>Todos</em></MenuItem>
-          {programmes.map((p) => (
-            <MenuItem key={p.id} value={p.id}>
-              {p.name}{p.cohort ? ` – ${p.cohort}` : ''}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <MultiSelect
+        label="Programa"
+        value={filters.programmeIds}
+        options={programmeOptions}
+        onChange={set('programmeIds')}
+        getLabel={(v) => programmes.find((p) => p.id === v)?.name ?? v}
+        emptyText="Todos"
+      />
 
-      <FormControl size="small" sx={{ minWidth: 220, maxWidth: 360 }}>
-        <InputLabel>ONG</InputLabel>
-        <Select
-          multiple
-          value={filters.ngoNames ?? []}
-          onChange={set('ngoNames')}
-          input={<OutlinedInput label="ONG" />}
-          renderValue={(selected) =>
-            selected.length === 0
-              ? 'Todas'
-              : (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((v) => <Chip key={v} label={v} size="small" />)}
-                </Box>
-              )
-          }
-          MenuProps={MENU_PROPS}
-        >
-          {NGO_OPTIONS.map((n) => (
-            <MenuItem key={n} value={n}>
-              <Checkbox checked={(filters.ngoNames ?? []).includes(n)} size="small" />
-              <ListItemText primary={n} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <MultiSelect
+        label="ONG"
+        value={filters.ngoNames}
+        options={NGO_OPTIONS}
+        onChange={set('ngoNames')}
+        emptyText="Todas"
+      />
 
-      <FormControl size="small" sx={{ minWidth: 220, maxWidth: 360 }}>
-        <InputLabel>Grupo de Inclusión</InputLabel>
-        <Select
-          multiple
-          value={filters.diversityGroups ?? []}
-          onChange={set('diversityGroups')}
-          input={<OutlinedInput label="Grupo de Inclusión" />}
-          renderValue={(selected) =>
-            selected.length === 0
-              ? 'Todos'
-              : (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((v) => <Chip key={v} label={v} size="small" />)}
-                </Box>
-              )
-          }
-          MenuProps={MENU_PROPS}
-        >
-          {DIVERSITY_GROUP_OPTIONS.map((g) => (
-            <MenuItem key={g} value={g}>
-              <Checkbox checked={(filters.diversityGroups ?? []).includes(g)} size="small" />
-              <ListItemText primary={g} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <MultiSelect
+        label="Grupo de Inclusión"
+        value={filters.diversityGroups}
+        options={DIVERSITY_GROUP_OPTIONS}
+        onChange={set('diversityGroups')}
+        emptyText="Todos"
+      />
 
       <TextField
         label="Desde"

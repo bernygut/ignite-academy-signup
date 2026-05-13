@@ -15,9 +15,13 @@ import {
 import AdminHeader from '../components/layout/AdminHeader'
 import { fetchStats } from '../services/applicationService'
 import { useSnackbar } from '../context/SnackbarContext'
+import { DIVERSITY_GROUP_OPTIONS } from '../utils/constants'
 
-function aggregate(applications, key) {
+function aggregate(applications, key, requiredKeys = []) {
   const byKey = new Map()
+  // Seed with known keys so zero-signup entries still appear
+  for (const k of requiredKeys) byKey.set(k, { total: 0, approved: 0 })
+
   for (const app of applications) {
     const value = app[key] || 'Sin especificar'
     if (!byKey.has(value)) byKey.set(value, { total: 0, approved: 0 })
@@ -90,7 +94,10 @@ export default function StatsPage() {
       .finally(() => setLoading(false))
   }, [showSnack])
 
-  const byGroup = useMemo(() => aggregate(applications, 'diversity_group'), [applications])
+  const byGroup = useMemo(
+    () => aggregate(applications, 'diversity_group', DIVERSITY_GROUP_OPTIONS),
+    [applications]
+  )
   const byNgo   = useMemo(() => aggregate(applications, 'ngo_name'), [applications])
 
   return (

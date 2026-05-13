@@ -44,4 +44,5 @@ export const NGO_OPTIONS = [
   'Ideas en Acción',
   'CTP Ingeniero Carlos Pascua',
   'IRCA',
+  'IIRESODH',
 ]

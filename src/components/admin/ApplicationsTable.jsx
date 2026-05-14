@@ -23,6 +23,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import DeleteIcon from '@mui/icons-material/Delete'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { STATUS_COLORS, STATUS_LABELS } from '../../utils/constants'
@@ -54,13 +55,15 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy)
 }
 
-export default function ApplicationsTable({ applications, loading, onEdit, onDelete }) {
+export default function ApplicationsTable({ applications, loading, onEdit, onDelete, onApprove }) {
   const [order, setOrder] = useState('desc')
   const [orderBy, setOrderBy] = useState('submitted_at')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(200)
   const [toDelete, setToDelete] = useState(null)
   const [deleting, setDeleting] = useState(false)
+  const [toApprove, setToApprove] = useState(null)
+  const [approving, setApproving] = useState(false)
 
   function handleSort(col) {
     const isAsc = orderBy === col && order === 'asc'
@@ -76,6 +79,16 @@ export default function ApplicationsTable({ applications, loading, onEdit, onDel
       setToDelete(null)
     } finally {
       setDeleting(false)
+    }
+  }
+
+  async function handleApprove() {
+    setApproving(true)
+    try {
+      await onApprove(toApprove.id)
+      setToApprove(null)
+    } finally {
+      setApproving(false)
     }
   }
 
@@ -166,6 +179,13 @@ export default function ApplicationsTable({ applications, loading, onEdit, onDel
                             <OpenInNewIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
+                        {app.status !== 'approved' && (
+                          <Tooltip title="Aprobar">
+                            <IconButton size="small" color="success" onClick={() => setToApprove(app)}>
+                              <CheckCircleIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                         <Tooltip title="Eliminar">
                           <IconButton size="small" color="error" onClick={() => setToDelete(app)}>
                             <DeleteIcon fontSize="small" />
@@ -190,6 +210,30 @@ export default function ApplicationsTable({ applications, loading, onEdit, onDel
           }}
         />
       </Paper>
+
+      <Dialog open={!!toApprove} onClose={() => setToApprove(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>Aprobar solicitud</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ¿Aprobar la solicitud de <strong>{toApprove?.full_name}</strong>?
+            Se enviará un correo de confirmación al participante, al administrador y a los líderes del grupo.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setToApprove(null)} disabled={approving}>
+            Cancelar
+          </Button>
+          <Button
+            color="success"
+            variant="contained"
+            onClick={handleApprove}
+            disabled={approving}
+            startIcon={approving ? <CircularProgress size={16} color="inherit" /> : null}
+          >
+            {approving ? 'Aprobando…' : 'Aprobar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={!!toDelete} onClose={() => setToDelete(null)} maxWidth="xs" fullWidth>
         <DialogTitle>Eliminar solicitud</DialogTitle>

@@ -9,12 +9,13 @@ import ExportButton from '../components/admin/ExportButton'
 import CapacityPanel from '../components/admin/CapacityPanel'
 import { useApplications } from '../hooks/useApplications'
 
-const INITIAL_FILTERS = { statuses: [], programmeIds: [], dateFrom: '', dateTo: '', ngoNames: [], diversityGroups: [] }
+const DEFAULT_STATUSES = ['pending', 'approved', 'waitlisted']
+const INITIAL_FILTERS = { statuses: DEFAULT_STATUSES, programmeIds: [], dateFrom: '', dateTo: '', ngoNames: [], diversityGroups: [] }
 
 export default function AdminDashboardPage() {
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const [selected, setSelected] = useState(null)
-  const { applications, loading, error, update, remove } = useApplications(filters)
+  const { applications, loading, error, update, remove, approve } = useApplications(filters)
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -43,6 +44,7 @@ export default function AdminDashboardPage() {
           loading={loading}
           onEdit={setSelected}
           onDelete={remove}
+          onApprove={approve}
         />
 
         <ApplicationDrawer

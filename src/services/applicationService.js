@@ -70,6 +70,34 @@ export async function updateProgrammeCapacity(programmeId, maxCapacity) {
   if (error) throw error
 }
 
+export async function approveApplication(id) {
+  const { data: { session } } = await supabase.auth.getSession()
+  const updates = {
+    status: 'approved',
+    reviewed_at: new Date().toISOString(),
+  }
+  if (session?.user) updates.reviewed_by = session.user.id
+
+  const { error } = await supabase
+    .from('applications')
+    .update(updates)
+    .eq('id', id)
+
+  if (error) throw error
+
+  await fetch(
+    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-approval`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ application_id: id }),
+    }
+  ).catch((err) => console.error('Approval email failed:', err))
+}
+
 export async function deleteApplication(id) {
   const { error } = await supabase
     .from('applications')

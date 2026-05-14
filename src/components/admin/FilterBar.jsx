@@ -53,7 +53,7 @@ export default function FilterBar({ filters, onChange }) {
   }
 
   function clear() {
-    onChange({ statuses: [], programmeIds: [], dateFrom: '', dateTo: '', ngoNames: [], diversityGroups: [] })
+    onChange({ statuses: ['pending', 'approved', 'waitlisted'], programmeIds: [], dateFrom: '', dateTo: '', ngoNames: [], diversityGroups: [] })
   }
 
   const hasFilters = Object.values(filters).some((v) =>

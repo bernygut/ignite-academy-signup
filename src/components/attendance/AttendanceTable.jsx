@@ -12,8 +12,11 @@ import {
   Typography,
 } from '@mui/material'
 
-const TODAY = new Date()
-TODAY.setHours(23, 59, 59, 999)
+function endOfToday() {
+  const t = new Date()
+  t.setHours(23, 59, 59, 999)
+  return t
+}
 
 function parseLocalDate(dateStr) {
   // Parse as local time to avoid UTC-offset date shifting
@@ -28,13 +31,25 @@ function formatLessonDate(dateStr) {
   })
 }
 
-function calcAttendance(studentMap, pastLessons) {
-  if (!pastLessons.length) return null
-  const attended = pastLessons.filter((l) => studentMap?.get(l.id) === true).length
+// A lesson "counts" toward attendance once either:
+//  - its date has passed (today or earlier), or
+//  - any student has been marked for it (so the instructor has taken attendance).
+function getCountableLessons(lessons, attendanceMap) {
+  const now = endOfToday()
+  return lessons.filter((l) => {
+    if (parseLocalDate(l.lesson_date) <= now) return true
+    for (const sm of attendanceMap.values()) if (sm.has(l.id)) return true
+    return false
+  })
+}
+
+function calcAttendance(studentMap, countableLessons) {
+  if (!countableLessons.length) return null
+  const attended = countableLessons.filter((l) => studentMap?.get(l.id) === true).length
   return {
     attended,
-    total: pastLessons.length,
-    pct:   Math.round((attended / pastLessons.length) * 100),
+    total: countableLessons.length,
+    pct:   Math.round((attended / countableLessons.length) * 100),
   }
 }
 
@@ -60,7 +75,7 @@ export default function AttendanceTable({
   loading,
   toggle,
 }) {
-  const pastLessons = lessons.filter((l) => parseLocalDate(l.lesson_date) <= TODAY)
+  const countableLessons = getCountableLessons(lessons, attendanceMap)
 
   if (loading) {
     return (
@@ -90,26 +105,19 @@ export default function AttendanceTable({
               Participante
             </TableCell>
 
-            {lessons.map((lesson) => {
-              const isFuture = parseLocalDate(lesson.lesson_date) > TODAY
-              return (
-                <TableCell
-                  key={lesson.id}
-                  align="center"
-                  sx={{
-                    minWidth: CELL_WIDTH,
-                    fontWeight: 700,
-                    color: isFuture ? 'text.disabled' : 'text.primary',
-                  }}
-                >
-                  L{lesson.lesson_number}
-                  <br />
-                  <Typography variant="caption" display="block" sx={{ fontWeight: 400 }}>
-                    {formatLessonDate(lesson.lesson_date)}
-                  </Typography>
-                </TableCell>
-              )
-            })}
+            {lessons.map((lesson) => (
+              <TableCell
+                key={lesson.id}
+                align="center"
+                sx={{ minWidth: CELL_WIDTH, fontWeight: 700 }}
+              >
+                L{lesson.lesson_number}
+                <br />
+                <Typography variant="caption" display="block" sx={{ fontWeight: 400 }}>
+                  {formatLessonDate(lesson.lesson_date)}
+                </Typography>
+              </TableCell>
+            ))}
 
             <TableCell align="center" sx={{ minWidth: 110, fontWeight: 700 }}>
               Asistencia
@@ -120,7 +128,7 @@ export default function AttendanceTable({
         <TableBody>
           {students.map((student) => {
             const studentMap = attendanceMap.get(student.id) ?? new Map()
-            const stats      = calcAttendance(studentMap, pastLessons)
+            const stats      = calcAttendance(studentMap, countableLessons)
 
             return (
               <TableRow key={student.id} hover>

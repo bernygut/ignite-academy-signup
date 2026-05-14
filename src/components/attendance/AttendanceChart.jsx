@@ -8,18 +8,32 @@ const PAD_RIGHT  = 16
 const PAD_TOP    = 24
 const PAD_BOTTOM = 40
 
+function parseLocalDate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
 function buildSeries(students, lessons, attendanceMap) {
-  // Cumulative average attendance % up to and including each lesson.
+  // Cumulative average attendance % across countable lessons only.
+  // A lesson counts if it has occurred or has any attendance recorded.
+  const now = new Date()
+  now.setHours(23, 59, 59, 999)
+
   const points = []
   let cumulativeAttended = 0
   let cumulativeSlots    = 0
 
   for (const lesson of lessons) {
+    const isPast = parseLocalDate(lesson.lesson_date) <= now
+    let hasRecord = false
     let attendedThisLesson = 0
     for (const student of students) {
       const studentMap = attendanceMap.get(student.id)
+      if (studentMap?.has(lesson.id)) hasRecord = true
       if (studentMap?.get(lesson.id) === true) attendedThisLesson += 1
     }
+    if (!isPast && !hasRecord) continue   // skip untouched future lessons
+
     cumulativeAttended += attendedThisLesson
     cumulativeSlots    += students.length
     const pct = cumulativeSlots === 0 ? 0 : (cumulativeAttended / cumulativeSlots) * 100

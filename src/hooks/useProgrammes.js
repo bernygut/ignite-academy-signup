@@ -13,20 +13,23 @@ export function useProgrammes() {
         .select('id, name, cohort, max_capacity')
         .eq('is_active', true)
         .order('name', { ascending: true }),
-      supabase.rpc('programme_enrollment_counts'),
-    ]).then(([{ data: progs, error: progErr }, { data: counts, error: countErr }]) => {
-      if (progErr || countErr) {
-        setError((progErr || countErr).message)
+      supabase
+        .from('applications')
+        .select('programme_id')
+        .eq('status', 'approved'),
+    ]).then(([{ data: progs, error: progErr }, { data: apps, error: appErr }]) => {
+      if (progErr || appErr) {
+        setError((progErr || appErr).message)
       } else {
-        const countMap = {}
-        for (const row of counts ?? []) {
-          countMap[row.programme_id] = Number(row.approved_count)
+        const counts = {}
+        for (const app of apps ?? []) {
+          counts[app.programme_id] = (counts[app.programme_id] ?? 0) + 1
         }
         setProgrammes(
           (progs ?? []).map((p) => ({
             ...p,
-            enrolled:  countMap[p.id] ?? 0,
-            available: p.max_capacity - (countMap[p.id] ?? 0),
+            enrolled: counts[p.id] ?? 0,
+            available: p.max_capacity - (counts[p.id] ?? 0),
           }))
         )
       }

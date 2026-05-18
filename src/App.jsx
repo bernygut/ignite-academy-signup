@@ -13,6 +13,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import SetPasswordPage from './pages/SetPasswordPage'
 import UsersPage from './pages/UsersPage'
 import StatsPage from './pages/StatsPage'
+import CeremoniesPage from './pages/CeremoniesPage'
 import MfaChallengeScreen from './components/auth/MfaChallengeScreen'
 import MfaEnrollScreen from './components/auth/MfaEnrollScreen'
 
@@ -83,6 +84,14 @@ function AppRoutes() {
         element={
           <RequireRole allowedRoles={['admin']}>
             <StatsPage />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/ceremonias"
+        element={
+          <RequireRole allowedRoles={['admin']}>
+            <CeremoniesPage />
           </RequireRole>
         }
       />

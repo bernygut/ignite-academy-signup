@@ -34,32 +34,52 @@ function fillMergeFields(html: string, vars: Record<string, string>): string {
   return html.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] ?? '')
 }
 
-async function sendEmail(opts: {
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+// Resend free tier is 5 req/sec. We aim for ~4 req/sec to stay safely below.
+const MIN_INTERVAL_MS = 250
+const MAX_RETRIES     = 3
+
+async function sendEmailWithRetry(opts: {
   to: string
   cc?: string[]
   subject: string
   html: string
 }) {
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: FROM_EMAIL,
-      to:   [opts.to],
-      cc:   opts.cc && opts.cc.length ? opts.cc : undefined,
-      subject: opts.subject,
-      html:    opts.html,
-    }),
-  })
-  if (!res.ok) throw new Error(await res.text())
+  let attempt = 0
+  while (true) {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to:   [opts.to],
+        cc:   opts.cc && opts.cc.length ? opts.cc : undefined,
+        subject: opts.subject,
+        html:    opts.html,
+      }),
+    })
+    if (res.ok) return
+
+    const text = await res.text()
+    // Retry on 429 (rate limit) with exponential backoff
+    if (res.status === 429 && attempt < MAX_RETRIES) {
+      attempt += 1
+      await sleep(1000 * attempt)
+      continue
+    }
+    throw new Error(text)
+  }
 }
 
 serve(async (req: Request) => {
-  const origin      = req.headers.get('origin') ?? ''
-  const corsHeaders = ALLOWED_ORIGINS.includes(origin)
+  const origin = req.headers.get('origin') ?? ''
+  const corsHeaders: Record<string, string> = ALLOWED_ORIGINS.includes(origin)
     ? { 'Access-Control-Allow-Origin': origin }
     : {}
 
@@ -115,13 +135,16 @@ serve(async (req: Request) => {
 
   if (invErr || !invitation) return json({ error: 'Invitation not found' }, 404, corsHeaders)
 
+  // Only process recipients that have not already been sent — makes the
+  // function safe to re-invoke for retries of failed/pending ones.
   const { data: recipients, error: recErr } = await adminClient
     .from('ceremony_invitation_recipients')
     .select('id, email, full_name, programme_name')
     .eq('invitation_id', invitation_id)
+    .neq('delivery_status', 'sent')
 
   if (recErr) return json({ error: recErr.message }, 500, corsHeaders)
-  if (!recipients?.length) return json({ error: 'No recipients' }, 400, corsHeaders)
+  if (!recipients?.length) return json({ success: true, sent: 0, failed: 0 }, 200, corsHeaders)
 
   const fechaStr = formatDateEs(invitation.event_date)
   const horaStr  = formatTimeEs(invitation.event_time)
@@ -129,8 +152,13 @@ serve(async (req: Request) => {
 
   let sent = 0
   let failed = 0
+  let lastSendAt = 0
 
   for (const r of recipients) {
+    // Throttle to stay under Resend's 5 req/sec limit
+    const elapsed = Date.now() - lastSendAt
+    if (elapsed < MIN_INTERVAL_MS) await sleep(MIN_INTERVAL_MS - elapsed)
+
     const vars = {
       nombre:   r.full_name,
       programa: r.programme_name ?? '',
@@ -142,7 +170,7 @@ serve(async (req: Request) => {
     const subject      = fillMergeFields(invitation.subject, vars)
 
     try {
-      await sendEmail({
+      await sendEmailWithRetry({
         to:      r.email,
         cc:      invitation.cc_emails,
         subject,
@@ -161,6 +189,7 @@ serve(async (req: Request) => {
         .update({ delivery_status: 'failed', error_message: msg.slice(0, 500) })
         .eq('id', r.id)
     }
+    lastSendAt = Date.now()
   }
 
   return json({ success: true, sent, failed }, 200, corsHeaders)

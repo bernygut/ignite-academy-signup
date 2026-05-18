@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   Box,
+  Button,
   Chip,
   CircularProgress,
   Divider,
@@ -17,7 +18,8 @@ import {
   Typography,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
-import { fetchInvitationDetail } from '../../services/ceremonyService'
+import ReplayIcon from '@mui/icons-material/Replay'
+import { fetchInvitationDetail, retryInvitation } from '../../services/ceremonyService'
 import { useSnackbar } from '../../context/SnackbarContext'
 
 const TYPE_LABELS = { inicio: 'Ceremonia de Inicio', graduacion: 'Ceremonia de Graduación' }
@@ -35,10 +37,11 @@ function Field({ label, value }) {
 
 export default function CampaignDetailDrawer({ invitationId, onClose }) {
   const { showSnack } = useSnackbar()
-  const [data, setData]       = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData]         = useState(null)
+  const [loading, setLoading]   = useState(true)
+  const [retrying, setRetrying] = useState(false)
 
-  useEffect(() => {
+  function load() {
     if (!invitationId) return
     setLoading(true)
     setData(null)
@@ -46,7 +49,22 @@ export default function CampaignDetailDrawer({ invitationId, onClose }) {
       .then(setData)
       .catch((err) => showSnack(err.message || 'Error al cargar la invitación.', 'error'))
       .finally(() => setLoading(false))
-  }, [invitationId, showSnack])
+  }
+
+  useEffect(() => { load() }, [invitationId])
+
+  async function handleRetry() {
+    setRetrying(true)
+    try {
+      const result = await retryInvitation(invitationId)
+      showSnack(`Reintento: ${result.sent} enviados, ${result.failed} fallidos.`, 'success')
+      load()
+    } catch (err) {
+      showSnack(err.message || 'Error al reintentar.', 'error')
+    } finally {
+      setRetrying(false)
+    }
+  }
 
   const open = Boolean(invitationId)
   const invitation = data?.invitation
@@ -102,11 +120,23 @@ export default function CampaignDetailDrawer({ invitationId, onClose }) {
 
           <Divider sx={{ my: 2 }} />
 
-          <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap', alignItems: 'center' }}>
             <Chip label={`${recipients.length} destinatarios`} size="small" />
             <Chip label={`${sentCount} enviados`} size="small" color="success" />
             {failedCount > 0 && (
               <Chip label={`${failedCount} fallidos`} size="small" color="error" />
+            )}
+            {(recipients.length - sentCount) > 0 && (
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={retrying ? <CircularProgress size={14} /> : <ReplayIcon />}
+                onClick={handleRetry}
+                disabled={retrying}
+                sx={{ ml: 'auto' }}
+              >
+                {retrying ? 'Reintentando…' : 'Reintentar fallidos'}
+              </Button>
             )}
           </Box>
 

@@ -87,6 +87,29 @@ export async function createInvitationAndSend({
   return { invitationId: invitation.id, ...(await res.json()) }
 }
 
+export async function retryInvitation(invitationId) {
+  const { data: { session } } = await supabase.auth.getSession()
+
+  const res = await fetch(
+    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-ceremony-invitation`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ invitation_id: invitationId }),
+    }
+  )
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.error || 'Error al reintentar.')
+  }
+
+  return res.json()
+}
+
 export async function fetchInvitations() {
   const { data, error } = await supabase
     .from('ceremony_invitations')

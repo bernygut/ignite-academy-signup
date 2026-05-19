@@ -31,15 +31,19 @@ const INITIAL_FORM = {
   programme_name: '',
 }
 
+// Requires segments separated by dots, no leading/trailing dot in the domain,
+// and at least one dot — rejects e.g. "foo@bar.com." (the bug we had).
+const EMAIL_REGEX = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/
+
 function validate(form) {
   const errors = {}
   if (!form.full_name.trim()) errors.full_name = 'El nombre completo es requerido'
   if (!form.email.trim()) {
     errors.email = 'El correo de contacto es requerido'
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+  } else if (!EMAIL_REGEX.test(form.email.trim())) {
     errors.email = 'Ingresa un correo de contacto válido'
   }
-  if (form.educational_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.educational_email)) {
+  if (form.educational_email && !EMAIL_REGEX.test(form.educational_email.trim())) {
     errors.educational_email = 'Ingresa un correo educativo válido'
   }
   if (!form.age) {
@@ -83,7 +87,7 @@ export default function SignupForm() {
 
     setSubmitting(true)
     try {
-      const alreadyRegistered = await checkEmailExists(form.email)
+      const alreadyRegistered = await checkEmailExists(form.email.trim())
       if (alreadyRegistered) {
         setErrors({ email: 'Este correo ya tiene una solicitud registrada.' })
         setSubmitting(false)
@@ -93,9 +97,11 @@ export default function SignupForm() {
       const { programme_name, ...formData } = form
       const payload = {
         ...formData,
-        age: form.age ? Number(form.age) : null,
-        ngo_name: form.ngo_name || null,
-        educational_email: form.educational_email || null,
+        full_name:         form.full_name.trim(),
+        email:             form.email.trim(),
+        educational_email: form.educational_email?.trim() || null,
+        ngo_name:          form.ngo_name?.trim() || null,
+        age:               form.age ? Number(form.age) : null,
       }
 
       const row = await createApplication(payload)

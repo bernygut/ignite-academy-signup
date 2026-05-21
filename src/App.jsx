@@ -6,6 +6,7 @@ import { SnackbarProvider } from './context/SnackbarContext'
 import AlertSnackbar from './components/common/AlertSnackbar'
 import { CircularProgress, Box } from '@mui/material'
 import SignupPage from './pages/SignupPage'
+import SignupsClosedPage from './pages/SignupsClosedPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
 import AttendancePage from './pages/AttendancePage'
@@ -52,7 +53,8 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/"             element={<SignupPage />} />
+      {/* Signups are currently closed — swap to <SignupPage /> to reopen. */}
+      <Route path="/"             element={<SignupsClosedPage />} />
       <Route path="/privacy"      element={<PrivacyPolicyPage />} />
       <Route path="/admin/login"  element={<AdminLoginPage />} />
       <Route

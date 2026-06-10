@@ -1,18 +1,53 @@
 name: Keep Supabase project alive
 
+# Supabase pauses free-tier projects after 7 days of inactivity.
+# We ping daily so a single skipped GitHub Actions run still leaves
+# plenty of margin. We hit BOTH the REST API (database query) and the
+# Auth API to make absolutely sure both subsystems register activity.
+
 on:
   schedule:
-    # Runs every 3 days at 08:00 UTC
-    - cron: '0 8 */3 * *'
-  workflow_dispatch: # Allow manual trigger from GitHub Actions UI
+    - cron: '0 8 * * *'   # Daily at 08:00 UTC
+  workflow_dispatch:       # Allow manual trigger from the Actions UI
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase
+      - name: Ping REST API (database query)
         run: |
-          curl -sf \
+          STATUS=$(curl -s -o /tmp/rest.json -w "%{http_code}" \
             "${{ secrets.VITE_SUPABASE_URL }}/rest/v1/programmes?select=id&limit=1" \
             -H "apikey: ${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.VITE_SUPABASE_ANON_KEY }}"
+            -H "Authorization: Bearer ${{ secrets.VITE_SUPABASE_ANON_KEY }}")
+          echo "REST status: $STATUS"
+          cat /tmp/rest.json
+          if [ "$STATUS" != "200" ]; then
+            echo "REST ping failed"
+            exit 1
+          fi
+
+      - name: Ping Auth API (settings endpoint)
+        run: |
+          STATUS=$(curl -s -o /tmp/auth.json -w "%{http_code}" \
+            "${{ secrets.VITE_SUPABASE_URL }}/auth/v1/settings" \
+            -H "apikey: ${{ secrets.VITE_SUPABASE_ANON_KEY }}")
+          echo "Auth status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Auth ping failed"
+            exit 1
+          fi
+
+      - name: Call RPC (additional database activity)
+        run: |
+          STATUS=$(curl -s -o /tmp/rpc.json -w "%{http_code}" -X POST \
+            "${{ secrets.VITE_SUPABASE_URL }}/rest/v1/rpc/programme_enrollment_counts" \
+            -H "apikey: ${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{}')
+          echo "RPC status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "RPC ping failed"
+            exit 1
+          fi
